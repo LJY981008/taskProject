@@ -2,6 +2,9 @@ package com.example.taskproject.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -24,4 +27,8 @@ public class ActiveLog {
     private String activityType;
 
     private Long targetId;
+
+    @CreatedDate
+    @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createTime;
 }

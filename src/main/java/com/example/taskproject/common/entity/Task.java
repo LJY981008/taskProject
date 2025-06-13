@@ -17,7 +17,7 @@ public class Task extends BaseEntity {
 
     private String title;
 
-    private String content;
+    private String contents;
 
     private TaskPriority taskPriority;
 
