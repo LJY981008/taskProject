@@ -3,6 +3,7 @@ package com.example.taskproject.domain.statistics.service;
 import com.example.taskproject.common.util.Responser;
 import com.example.taskproject.domain.statistics.dto.GetTaskStatusResponse;
 import com.example.taskproject.domain.statistics.dto.GetTeamFinishTaskResponse;
+import com.example.taskproject.domain.statistics.dto.GetWeekFinishTaskResponse;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,5 +29,11 @@ public class StatisticsService {
 
         GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(0L, 0L, 0L);
         return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Map<String, Object>> getWeekFinisshTaskCounts(User user) {
+
+        GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(0L, 0L);
+        return Responser.responseEntity(getWeekFinishTaskResponse, HttpStatus.OK);
     }
 }

@@ -31,4 +31,11 @@ public class StatisticsController {
     ) {
         return statisticsService.getTeamFinishTaskCounts(user);
     }
+
+    @GetMapping("/weekly-trend")
+    public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
+            @AuthenticationPrincipal User user
+    ) {
+        return statisticsService.getWeekFinisshTaskCounts(user);
+    }
 }
