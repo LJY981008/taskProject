@@ -5,23 +5,39 @@ import com.example.taskproject.domain.statistics.dto.GetTaskStatusResponse;
 import com.example.taskproject.domain.statistics.dto.GetTeamFinishTaskResponse;
 import com.example.taskproject.domain.statistics.dto.GetWeekFinishTaskResponse;
 import com.example.taskproject.domain.task.repository.TaskRepository;
+import com.example.taskproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
 
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     public ResponseEntity<Map<String, Object>> getTaskStatusCounts(User user) {
 
-        GetTaskStatusResponse getTaskStatusResponse = new GetTaskStatusResponse(0L,0L,0L);
+        List<TaskRepository.StatusCount> taskCounts = taskRepository.findStatusCountJPQL();
+
+        long todo = 0L;
+        long inProgress = 0L;
+        long done = 0L;
+
+        for (TaskRepository.StatusCount count : taskCounts) {
+            switch (count.getTaskStatus()) {
+                case TODO -> todo = count.getCount();
+                case IN_PROGRESS -> inProgress = count.getCount();
+                case DONE -> done = count.getCount();
+            }
+        }
+
+        GetTaskStatusResponse getTaskStatusResponse = new GetTaskStatusResponse(todo, inProgress, done);
         return Responser.responseEntity(getTaskStatusResponse, HttpStatus.OK);
     }
 
