@@ -96,3 +96,10 @@ GitHub PR 페이지에서 병합 후 Delete branch 버튼을 클릭한다.
 `Refactor: 리팩토링한 내용` - 코드 리팩토링 시</br>
 `Comment: 주석 추가한 내용` - 주석 추가 또는 수정 시
 </details>
+
+## API 명세서
+[API 포스트맨 명세서](https://documenter.getpostman.com/view/45861231/2sB2x6mBzG)
+
+## ERD
+<img width="919" alt="스크린샷 2025-06-13 오후 5 27 26" src="https://github.com/user-attachments/assets/b85d751b-fdaf-46c4-a657-c42c2ac64446" />
+
