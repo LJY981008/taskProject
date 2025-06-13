@@ -20,4 +20,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         TaskStatus getTaskStatus();
         Long getCount();
     }
+
+    Long countAllByDeletedFalse();
+    Long countByDeletedFalseAndTaskStatus(TaskStatus taskStatus);
+    Long countByDeletedFalseAndAuthor_UsernameAndTaskStatus(String authorUsername, TaskStatus taskStatus);
 }

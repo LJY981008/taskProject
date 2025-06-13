@@ -1,11 +1,11 @@
 package com.example.taskproject.domain.statistics.service;
 
+import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.util.Responser;
 import com.example.taskproject.domain.statistics.dto.GetTaskStatusResponse;
 import com.example.taskproject.domain.statistics.dto.GetTeamFinishTaskResponse;
 import com.example.taskproject.domain.statistics.dto.GetWeekFinishTaskResponse;
 import com.example.taskproject.domain.task.repository.TaskRepository;
-import com.example.taskproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,11 @@ public class StatisticsService {
 
     public ResponseEntity<Map<String, Object>> getTeamFinishTaskCounts(User user) {
 
-        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(0L, 0L, 0L);
+        Long totalTaskCount = taskRepository.countAllByDeletedFalse();
+        Long teamFinishTaskCount = taskRepository.countByDeletedFalseAndTaskStatus(TaskStatus.DONE);
+        Long myFinishTaskCount = taskRepository.countByDeletedFalseAndAuthor_UsernameAndTaskStatus(user.getUsername(), TaskStatus.DONE);
+
+        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(totalTaskCount, teamFinishTaskCount, myFinishTaskCount);
         return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
     }
 
