@@ -24,4 +24,11 @@ public class StatisticsController {
     ) {
         return statisticsService.getTaskStatusCounts(user);
     }
+
+    @GetMapping("/team-progress")
+    public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
+            @AuthenticationPrincipal User user
+    ) {
+        return statisticsService.getTeamFinishTaskCounts(user);
+    }
 }
