@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,12 @@ public class StatisticsService {
 
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts(User user) {
 
-        GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(0L, 0L);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sevenDaysAgo = now.minusDays(7);
+        Long weekTaskCount = taskRepository.countByDeletedFalseAndCreatedAtBetween(sevenDaysAgo, now);
+        Long weekFinishTaskCount = taskRepository.countByDeletedFalseAndTaskStatusAndCreatedAtBetween(TaskStatus.DONE, sevenDaysAgo, now);
+
+        GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(weekTaskCount, weekFinishTaskCount);
         return Responser.responseEntity(getWeekFinishTaskResponse, HttpStatus.OK);
     }
 }

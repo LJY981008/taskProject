@@ -4,12 +4,11 @@ import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.enums.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@EnableJpaRepositories
 public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findTaskByTaskIdAndDeletedFalse(Long id);
 
@@ -24,4 +23,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Long countAllByDeletedFalse();
     Long countByDeletedFalseAndTaskStatus(TaskStatus taskStatus);
     Long countByDeletedFalseAndAuthor_UsernameAndTaskStatus(String authorUsername, TaskStatus taskStatus);
+
+    Long countByDeletedFalseAndCreatedAtBetween(LocalDateTime createdAt, LocalDateTime createdAt2);
+    Long countByDeletedFalseAndTaskStatusAndCreatedAtBetween(TaskStatus taskStatus, LocalDateTime createdAt, LocalDateTime createdAt2);
 }
