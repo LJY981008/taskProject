@@ -20,4 +20,14 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
+
+
+    public Comment() {
+    }
+
+    public Comment(String contents, User author, Task task){
+        this.contents = contents;
+        this.author = author;
+        this.task = task;
+    }
 }
