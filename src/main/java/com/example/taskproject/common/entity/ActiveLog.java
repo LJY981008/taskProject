@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "active_logs")
-public class ActiveLog extends BaseEntity {
+public class ActiveLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
