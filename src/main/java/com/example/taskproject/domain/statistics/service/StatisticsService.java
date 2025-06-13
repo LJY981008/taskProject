@@ -51,7 +51,7 @@ public class StatisticsService {
         return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<Map<String, Object>> getWeekFinisshTaskCounts(User user) {
+    public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts(User user) {
 
         GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(0L, 0L);
         return Responser.responseEntity(getWeekFinishTaskResponse, HttpStatus.OK);

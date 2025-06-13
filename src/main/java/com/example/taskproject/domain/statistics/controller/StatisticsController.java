@@ -36,6 +36,6 @@ public class StatisticsController {
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
             @AuthenticationPrincipal User user
     ) {
-        return statisticsService.getWeekFinisshTaskCounts(user);
+        return statisticsService.getWeekFinishTaskCounts(user);
     }
 }
