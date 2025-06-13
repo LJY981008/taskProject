@@ -1,4 +1,7 @@
 package com.example.taskproject.domain.statistics.repository;
 
-public interface StatisticsRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface StatisticsRepository extends JpaRepository {
 }
+
