@@ -16,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StatisticsController {
 
-    private StatisticsService statisticsService;
+    private final StatisticsService statisticsService;
 
     @GetMapping("/task-status")
     public ResponseEntity<Map<String, Object>> getTaskStatusStatistics(
