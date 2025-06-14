@@ -22,7 +22,7 @@ public class StatisticsService {
 
     private final TaskRepository taskRepository;
 
-    public ResponseEntity<Map<String, Object>> getTaskStatusCounts(User user) {
+    public ResponseEntity<Map<String, Object>> getTaskStatusCounts() {
 
         List<TaskRepository.StatusCount> taskCounts = taskRepository.findStatusCountJPQL();
 
@@ -52,7 +52,7 @@ public class StatisticsService {
         return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts(User user) {
+    public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts() {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime sevenDaysAgo = now.minusDays(7);

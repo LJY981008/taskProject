@@ -20,9 +20,8 @@ public class StatisticsController {
 
     @GetMapping("/task-status")
     public ResponseEntity<Map<String, Object>> getTaskStatusStatistics(
-            @AuthenticationPrincipal User user
     ) {
-        return statisticsService.getTaskStatusCounts(user);
+        return statisticsService.getTaskStatusCounts();
     }
 
     @GetMapping("/team-progress")
@@ -34,8 +33,7 @@ public class StatisticsController {
 
     @GetMapping("/weekly-trend")
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
-            @AuthenticationPrincipal User user
     ) {
-        return statisticsService.getWeekFinishTaskCounts(user);
+        return statisticsService.getWeekFinishTaskCounts();
     }
 }
