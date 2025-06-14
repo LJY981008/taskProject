@@ -44,11 +44,12 @@ public class StatisticsService {
 
     public ResponseEntity<Map<String, Object>> getTeamFinishTaskCounts(User user) {
 
-        Long totalTaskCount = taskRepository.countAllByDeletedFalse();
-        Long teamFinishTaskCount = taskRepository.countByDeletedFalseAndTaskStatus(TaskStatus.DONE);
-        Long myFinishTaskCount = taskRepository.countByDeletedFalseAndAuthor_UsernameAndTaskStatus(user.getUsername(), TaskStatus.DONE);
+        TaskRepository.TeamTaskStatusCount teamTaskStatusCount = taskRepository.countTeamTaskStatusCountJPQL(user.getUsername(), TaskStatus.DONE);
 
-        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(totalTaskCount, teamFinishTaskCount, myFinishTaskCount);
+        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(
+                teamTaskStatusCount.getTotalTaskCount(),
+                teamTaskStatusCount.getTeamFinishTaskCount(),
+                teamTaskStatusCount.getMyFinishTaskCount());
         return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
     }
 
