@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -53,14 +54,15 @@ public class StatisticsService {
         return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts() {
+    public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts(LocalDate from) {
+        LocalDateTime end = from.atStartOfDay();
+        LocalDateTime start = end.minusDays(7);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime sevenDaysAgo = now.minusDays(7);
-        Long weekTaskCount = taskRepository.countByDeletedFalseAndCreatedAtBetween(sevenDaysAgo, now);
-        Long weekFinishTaskCount = taskRepository.countByDeletedFalseAndTaskStatusAndCreatedAtBetween(TaskStatus.DONE, sevenDaysAgo, now);
+        TaskRepository.WeekFinishTaskCount weekFinishTaskCount = taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end);
 
-        GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(weekTaskCount, weekFinishTaskCount);
-        return Responser.responseEntity(getWeekFinishTaskResponse, HttpStatus.OK);
+        GetWeekFinishTaskResponse response = new GetWeekFinishTaskResponse(
+                weekFinishTaskCount.getWeekTaskCount(),
+                weekFinishTaskCount.getWeekFinishTaskCount());
+        return Responser.responseEntity(response, HttpStatus.OK);
     }
 }

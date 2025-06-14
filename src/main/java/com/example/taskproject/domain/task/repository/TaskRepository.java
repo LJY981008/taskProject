@@ -37,6 +37,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         Long getMyFinishTaskCount();
     }
 
-    Long countByDeletedFalseAndCreatedAtBetween(LocalDateTime createdAt, LocalDateTime createdAt2);
-    Long countByDeletedFalseAndTaskStatusAndCreatedAtBetween(TaskStatus taskStatus, LocalDateTime createdAt, LocalDateTime createdAt2);
+    @Query("""
+        SELECT
+            COALESCE( SUM(CASE WHEN t.createdAt between :start AND :end THEN 1 ELSE 0 END),0) AS weekTaskCount,
+            COALESCE( SUM(CASE WHEN t.taskStatus = :taskStatus AND t.createdAt between :start AND :end THEN 1 ELSE 0 END),0) AS weekFinishTaskCount
+        FROM Task t
+        """)
+    WeekFinishTaskCount countWeekFinishTaskCountJPQL(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end);
+
+    interface WeekFinishTaskCount {
+        Long getWeekTaskCount();
+        Long getWeekFinishTaskCount();
+    }
 }
