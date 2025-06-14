@@ -32,7 +32,7 @@ public class StatisticsController {
     public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
             @AuthenticationPrincipal User user
     ) {
-        return Responser.responseEntity(statisticsService.getTeamFinishTaskCounts(user), HttpStatus.OK);
+        return Responser.responseEntity(statisticsService.getTeamFinishTaskCounts(user.getUsername()), HttpStatus.OK);
     }
 
     @GetMapping("/weekly-trend")

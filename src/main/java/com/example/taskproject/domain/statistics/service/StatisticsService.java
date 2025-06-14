@@ -42,9 +42,9 @@ public class StatisticsService {
         return new GetTaskStatusResponse(todo, inProgress, done);
     }
 
-    public GetTeamFinishTaskResponse getTeamFinishTaskCounts(User user) {
+    public GetTeamFinishTaskResponse getTeamFinishTaskCounts(String email) {
 
-        TaskRepository.TeamTaskStatusCount teamTaskStatusCount = taskRepository.countTeamTaskStatusCountJPQL(user.getUsername(), TaskStatus.DONE);
+        TaskRepository.TeamTaskStatusCount teamTaskStatusCount = taskRepository.countTeamTaskStatusCountJPQL(email, TaskStatus.DONE);
 
         return new GetTeamFinishTaskResponse(
                 teamTaskStatusCount.getTotalTaskCount(),
