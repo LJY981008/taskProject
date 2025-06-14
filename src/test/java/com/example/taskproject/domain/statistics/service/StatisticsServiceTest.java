@@ -3,6 +3,7 @@ package com.example.taskproject.domain.statistics.service;
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.domain.statistics.dto.GetTaskStatusResponse;
 import com.example.taskproject.domain.statistics.dto.GetTeamFinishTaskResponse;
+import com.example.taskproject.domain.statistics.dto.GetWeekFinishTaskResponse;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -10,16 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 @ExtendWith(MockitoExtension.class)
 class StatisticsServiceTest {
 
@@ -104,6 +101,32 @@ class StatisticsServiceTest {
     }
 
     @Test
-    void getWeekFinishTaskCounts() {
+    void 주간_팀_Task_완료_수_가져오기_성공() {
+        //given
+        TaskRepository.WeekFinishTaskCount weekFinishTaskCount = new TaskRepository.WeekFinishTaskCount() {
+            @Override
+            public Long getWeekTaskCount() {
+                return 100L;
+            }
+
+            @Override
+            public Long getWeekFinishTaskCount() {
+                return 80L;
+            }
+        };
+        LocalDate from = LocalDate.now();
+        LocalDateTime end = from.atStartOfDay();
+        LocalDateTime start = end.minusDays(7);
+
+        GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(100L, 80L);
+
+        given(taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end)).willReturn(weekFinishTaskCount);
+
+        //when
+        GetWeekFinishTaskResponse weekFinishTaskCounts = statisticsService.getWeekFinishTaskCounts(from);
+
+        //then
+        assertEquals(weekFinishTaskCounts.getWeekTaskCount(), getWeekFinishTaskResponse.getWeekTaskCount());
+        assertEquals(weekFinishTaskCounts.getWeekFinishTaskCount(), getWeekFinishTaskResponse.getWeekFinishTaskCount());
     }
 }
