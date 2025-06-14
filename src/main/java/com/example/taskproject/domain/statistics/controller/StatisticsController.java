@@ -32,13 +32,13 @@ public class StatisticsController {
     public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
             @AuthenticationPrincipal User user
     ) {
-        return statisticsService.getTeamFinishTaskCounts(user);
+        return Responser.responseEntity(statisticsService.getTeamFinishTaskCounts(user), HttpStatus.OK);
     }
 
     @GetMapping("/weekly-trend")
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
             @RequestParam(required = false) LocalDate from
     ) {
-        return statisticsService.getWeekFinishTaskCounts(from);
+        return Responser.responseEntity(statisticsService.getWeekFinishTaskCounts(from), HttpStatus.OK);
     }
 }

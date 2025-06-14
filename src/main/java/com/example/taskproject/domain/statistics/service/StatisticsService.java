@@ -42,26 +42,24 @@ public class StatisticsService {
         return new GetTaskStatusResponse(todo, inProgress, done);
     }
 
-    public ResponseEntity<Map<String, Object>> getTeamFinishTaskCounts(User user) {
+    public GetTeamFinishTaskResponse getTeamFinishTaskCounts(User user) {
 
         TaskRepository.TeamTaskStatusCount teamTaskStatusCount = taskRepository.countTeamTaskStatusCountJPQL(user.getUsername(), TaskStatus.DONE);
 
-        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(
+        return new GetTeamFinishTaskResponse(
                 teamTaskStatusCount.getTotalTaskCount(),
                 teamTaskStatusCount.getTeamFinishTaskCount(),
                 teamTaskStatusCount.getMyFinishTaskCount());
-        return Responser.responseEntity(getTeamFinishTaskResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<Map<String, Object>> getWeekFinishTaskCounts(LocalDate from) {
+    public GetWeekFinishTaskResponse getWeekFinishTaskCounts(LocalDate from) {
         LocalDateTime end = from.atStartOfDay();
         LocalDateTime start = end.minusDays(7);
 
         TaskRepository.WeekFinishTaskCount weekFinishTaskCount = taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end);
 
-        GetWeekFinishTaskResponse response = new GetWeekFinishTaskResponse(
+        return new GetWeekFinishTaskResponse(
                 weekFinishTaskCount.getWeekTaskCount(),
                 weekFinishTaskCount.getWeekFinishTaskCount());
-        return Responser.responseEntity(response, HttpStatus.OK);
     }
 }
