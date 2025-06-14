@@ -2,6 +2,7 @@ package com.example.taskproject.domain.statistics.service;
 
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.domain.statistics.dto.GetTaskStatusResponse;
+import com.example.taskproject.domain.statistics.dto.GetTeamFinishTaskResponse;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -10,12 +11,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class StatisticsServiceTest {
@@ -68,7 +71,36 @@ class StatisticsServiceTest {
     }
 
     @Test
-    void getTeamFinishTaskCounts() {
+    void 팀_완료_Task_수_가져오기_성공() {
+        //given
+        TaskRepository.TeamTaskStatusCount teamTaskStatusCount = new TaskRepository.TeamTaskStatusCount() {
+            @Override
+            public Long getTotalTaskCount() {
+                return 30L;
+            }
+
+            @Override
+            public Long getTeamFinishTaskCount() {
+                return 15L;
+            }
+
+            @Override
+            public Long getMyFinishTaskCount() {
+                return 6L;
+            }
+        };
+
+        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(30L, 15L, 6L);
+
+        given(taskRepository.countTeamTaskStatusCountJPQL("nana@naver.com", TaskStatus.DONE)).willReturn(teamTaskStatusCount);
+
+        //when
+        GetTeamFinishTaskResponse teamFinishTaskCounts = statisticsService.getTeamFinishTaskCounts("nana@naver.com");
+
+        //then
+        assertEquals(teamFinishTaskCounts.getTotalTaskCount(), getTeamFinishTaskResponse.getTotalTaskCount());
+        assertEquals(teamFinishTaskCounts.getTeamFinishTaskCount(), getTeamFinishTaskResponse.getTeamFinishTaskCount());
+        assertEquals(teamFinishTaskCounts.getMyFinishTaskCount(), getTeamFinishTaskResponse.getMyFinishTaskCount());
     }
 
     @Test
