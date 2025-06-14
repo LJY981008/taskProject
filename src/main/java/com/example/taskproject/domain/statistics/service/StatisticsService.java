@@ -23,7 +23,7 @@ public class StatisticsService {
 
     private final TaskRepository taskRepository;
 
-    public ResponseEntity<Map<String, Object>> getTaskStatusCounts() {
+    public GetTaskStatusResponse getTaskStatusCounts() {
 
         List<TaskRepository.StatusCount> taskCounts = taskRepository.findStatusCountJPQL();
 
@@ -39,8 +39,7 @@ public class StatisticsService {
             }
         }
 
-        GetTaskStatusResponse getTaskStatusResponse = new GetTaskStatusResponse(todo, inProgress, done);
-        return Responser.responseEntity(getTaskStatusResponse, HttpStatus.OK);
+        return new GetTaskStatusResponse(todo, inProgress, done);
     }
 
     public ResponseEntity<Map<String, Object>> getTeamFinishTaskCounts(User user) {

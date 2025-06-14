@@ -1,7 +1,9 @@
 package com.example.taskproject.domain.statistics.controller;
 
+import com.example.taskproject.common.util.Responser;
 import com.example.taskproject.domain.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -23,7 +25,7 @@ public class StatisticsController {
     @GetMapping("/task-status")
     public ResponseEntity<Map<String, Object>> getTaskStatusStatistics(
     ) {
-        return statisticsService.getTaskStatusCounts();
+        return Responser.responseEntity(statisticsService.getTaskStatusCounts(), HttpStatus.OK);
     }
 
     @GetMapping("/team-progress")
