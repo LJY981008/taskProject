@@ -2,7 +2,6 @@ package com.example.taskproject.domain.statistics.repository;
 
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.domain.statistics.dto.*;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,7 +15,7 @@ import static com.example.taskproject.common.entity.QTask.task;
 
 @Repository
 @RequiredArgsConstructor
-public class StaticsRepositoryImpl implements StatisticsRepository{
+public class StatisticsRepositoryImpl implements StatisticsRepository{
 
     private final JPAQueryFactory queryFactory;
 
