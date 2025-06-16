@@ -2,10 +2,7 @@ package com.example.taskproject.domain.user.controller;
 
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.util.CustomMapper;
-import com.example.taskproject.domain.user.dto.LoginRequest;
-import com.example.taskproject.domain.user.dto.LoginResponse;
-import com.example.taskproject.domain.user.dto.RegisterRequest;
-import com.example.taskproject.domain.user.dto.UserResponse;
+import com.example.taskproject.domain.user.dto.*;
 import com.example.taskproject.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +35,12 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUser(@AuthenticationPrincipal AuthUserDto userDto) {
         UserResponse response = userService.getUser(userDto);
         return CustomMapper.responseEntity(response, HttpStatus.OK, true); // 사용자 정보를 조회했습니다.
+    }
+
+    @PostMapping("/auth/withdraw")
+    public ResponseEntity<Map<String, Object>> withdraw(@RequestBody @Valid WithdrawRequest request,
+                                                        @AuthenticationPrincipal AuthUserDto userDto) {
+        userService.withdraw(request,userDto);
+        return CustomMapper.responseEntity(null, HttpStatus.OK, true);
     }
 }
