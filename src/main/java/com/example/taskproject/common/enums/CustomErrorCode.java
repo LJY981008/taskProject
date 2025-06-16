@@ -12,7 +12,9 @@ public enum CustomErrorCode {
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이상해씨"),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
-    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 사용자명입니다");
+    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 사용자명입니다"),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED,"잘못된 사용자명 또는 비밀번호입니다"),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -1,6 +1,8 @@
 package com.example.taskproject.domain.user.controller;
 
 import com.example.taskproject.common.util.CustomMapper;
+import com.example.taskproject.domain.user.dto.LoginRequest;
+import com.example.taskproject.domain.user.dto.LoginResponse;
 import com.example.taskproject.domain.user.dto.RegisterRequest;
 import com.example.taskproject.domain.user.dto.UserResponse;
 import com.example.taskproject.domain.user.service.UserService;
@@ -25,5 +27,11 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> register(@RequestBody @Valid RegisterRequest request) {
         UserResponse response = userService.register(request);
         return CustomMapper.responseEntity(response, HttpStatus.CREATED, true); // message : 회원가입이 완료되었습니다.
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = userService.login(request);
+        return CustomMapper.responseEntity(response, HttpStatus.OK, true); //로그인이 완료되었습니다.
     }
 }

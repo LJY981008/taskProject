@@ -4,7 +4,10 @@ import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.CustomErrorCode;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
+import com.example.taskproject.common.util.JwtUtil;
 import com.example.taskproject.common.util.PasswordEncoder;
+import com.example.taskproject.domain.user.dto.LoginRequest;
+import com.example.taskproject.domain.user.dto.LoginResponse;
 import com.example.taskproject.domain.user.dto.RegisterRequest;
 import com.example.taskproject.domain.user.dto.UserResponse;
 import com.example.taskproject.domain.user.repository.UserRepository;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
@@ -34,6 +38,16 @@ public class UserService {
                 request.getName()
         ));
         return CustomMapper.toDto(user, UserResponse.class);
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage()));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage());
+        }
+
+        return new LoginResponse(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()));
     }
 
 }
