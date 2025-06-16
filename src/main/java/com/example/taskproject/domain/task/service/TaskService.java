@@ -8,17 +8,19 @@ import com.example.taskproject.common.dto.TaskUpdateRequestDto;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.TaskStatus;
+import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static com.example.taskproject.common.enums.CustomErrorCode.UNAUTHENTICATED;
 
 @RequiredArgsConstructor
 @Service
@@ -69,7 +71,7 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테스크 입니다"));
 
         if(!task.getAuthor().getUserId().equals(userDto.getId())) {
-            throw new AccessDeniedException("수정 권한이 없습니다.");
+            throw new CustomException(UNAUTHENTICATED);
         }
 
         if(request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -121,7 +123,7 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 태스크입니다."));
 
         if (!task.getAuthor().getUserId().equals(userDto.getId())) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
+            throw new CustomException(UNAUTHENTICATED);
         }
         task.setDeleted(true);
         task.setDeletedAt(LocalDateTime.now());

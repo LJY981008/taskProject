@@ -16,6 +16,7 @@ public enum CustomErrorCode {
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED,"잘못된 사용자명 또는 비밀번호입니다"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않거나 탈퇴한 유저입니다."),
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    UNAUTHENTICATED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

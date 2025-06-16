@@ -17,10 +17,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.parameters.P;
+import org.springframework.test.util.ReflectionTestUtils;
 
 
 import java.time.LocalDateTime;
@@ -30,8 +28,6 @@ import java.util.Optional;
 
 import static com.example.taskproject.common.enums.UserRole.USER;
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -63,8 +59,8 @@ public class TaskServiceTest {
         request.setDeadline(LocalDateTime.now().plusDays(1));
         request.setManagerId(null);
 
-        User author = new User();
-        author.setUserId(authUserDto.getId());
+        User author = mock(User.class);
+        ReflectionTestUtils.setField(author, "userId", 1L);
 
         when(userRepository.findById(authUserDto.getId())).thenReturn(Optional.of(author));
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -87,13 +83,15 @@ public class TaskServiceTest {
         request.setTitle("업데이트 테스트");
         request.setTaskStatus(TaskStatus.IN_PROGRESS);
 
-        User author = new User();
-        author.setUserId(authUserDto.getId());
+        User author = mock(User.class);
 
         Task existingTask = new Task();
         existingTask.setTaskId(taskId);
         existingTask.setAuthor(author);
         existingTask.setTaskStatus(TaskStatus.TODO);
+
+        existingTask.setAuthor(author);
+        when(author.getUserId()).thenReturn(1L);
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(author));
@@ -112,8 +110,8 @@ public class TaskServiceTest {
         // given
         Long taskId = 1L;
 
-        User author = new User();
-        author.setUserId(authUserDto.getId());
+        User author = mock(User.class);
+        ReflectionTestUtils.setField(author, "userId", 1L);
 
         Task task = new Task();
         task.setTaskId(taskId);
@@ -136,8 +134,8 @@ public class TaskServiceTest {
         // given
         Pageable pageable = Pageable.ofSize(10);
 
-        User author = new User();
-        author.setUserId(authUserDto.getId());
+        User author = mock(User.class);
+        ReflectionTestUtils.setField(author, "userId", 1L);
 
         Task task = new Task();
         task.setTaskId(1L);
@@ -161,12 +159,12 @@ public class TaskServiceTest {
     public void 태스크삭제(){
         // given
         Long taskId = 1L;
-        Task task = new Task();
+        Task task = mock();
         task.setTaskId(taskId);
 
-        User author = new User();
-        author.setUserId(authUserDto.getId());
+        User author = mock(User.class);
         task.setAuthor(author);
+        when(author.getUserId()).thenReturn(1L);
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));

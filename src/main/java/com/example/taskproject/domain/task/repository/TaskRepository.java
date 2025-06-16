@@ -1,6 +1,7 @@
 package com.example.taskproject.domain.task.repository;
 
 import com.example.taskproject.common.entity.Task;
+import com.example.taskproject.domain.statistics.repository.StatisticsRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
