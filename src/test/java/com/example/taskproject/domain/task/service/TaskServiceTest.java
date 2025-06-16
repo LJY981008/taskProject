@@ -15,15 +15,21 @@ import com.example.taskproject.domain.user.repository.UserRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.parameters.P;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
 import static com.example.taskproject.common.enums.UserRole.USER;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +80,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void 테스크수정() {
+    public void 태스크수정() {
         // given
         Long taskId = 1L;
         TaskUpdateRequestDto request = new TaskUpdateRequestDto();
@@ -99,6 +105,56 @@ public class TaskServiceTest {
         // then
         assertThat(response.getTitle()).isEqualTo("업데이트 테스트");
         assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
+    }
+
+    @Test
+    public void 태스크단건조회() {
+        // given
+        Long taskId = 1L;
+
+        User author = new User();
+        author.setUserId(authUserDto.getId());
+
+        Task task = new Task();
+        task.setTaskId(taskId);
+        task.setTitle("테스트 태스크");
+        task.setAuthor(author);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+
+        // when
+        TaskResponseDto response = taskService.getTask(taskId);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("테스트 태스크");
+
+    }
+
+    @Test
+    public void 태스크전체조회(){
+        // given
+        Pageable pageable = Pageable.ofSize(10);
+
+        User author = new User();
+        author.setUserId(authUserDto.getId());
+
+        Task task = new Task();
+        task.setTaskId(1L);
+        task.setTitle("태스크전체조회테스트");
+        task.setAuthor(author);
+
+        Page<Task> page = new PageImpl<Task>(List.of(task), pageable, 1);
+        when(taskRepository.findAll(pageable)).thenReturn(page);
+
+        // when
+        Page<TaskResponseDto> responsePage = taskService.getAllTasks(pageable);
+
+        // then
+        assertThat(responsePage).isNotNull();
+        assertThat(responsePage.getContent()).hasSize(1);
+        assertThat(responsePage.getContent().get(0).getTitle()).isEqualTo("태스크전체조회테스트");
+
     }
 
 
