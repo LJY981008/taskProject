@@ -12,7 +12,10 @@ public enum CustomErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이상해씨"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
-    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다.");
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    COMMENT_NOT_ENTERED(HttpStatus.BAD_REQUEST, "댓글이 작성되지 않았습니다."),
+    COMMENT_IS_EQUAL(HttpStatus.BAD_REQUEST, "수정된 댓글이 기존 댓글과 동일합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

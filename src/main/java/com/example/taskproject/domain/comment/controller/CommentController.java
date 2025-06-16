@@ -3,12 +3,19 @@ package com.example.taskproject.domain.comment.controller;
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.domain.comment.dto.CreateCommentRequestDto;
 import com.example.taskproject.domain.comment.dto.CreateCommentResponseDto;
+import com.example.taskproject.domain.comment.dto.UpdateCommentRequestDto;
+import com.example.taskproject.domain.comment.dto.UpdateCommentResponseDto;
 import com.example.taskproject.domain.comment.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 댓글 기능의 HTTP 요청을 처리하는 컨트롤러
+ *
+ * @author 이현하
+ */
 @RestController
 @RequestMapping("/tasks/{taskId}/comments")
 public class CommentController {
@@ -28,6 +35,21 @@ public class CommentController {
 
         CreateCommentResponseDto responseDto = commentService.createComment(taskId, requestDto, userDto);
 
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<UpdateCommentResponseDto> updateComment(
+            @PathVariable Long taskId,
+            @PathVariable Long commentId,
+            @RequestBody UpdateCommentRequestDto requestDto,
+            @AuthenticationPrincipal AuthUserDto userDto){
+
+        UpdateCommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
+
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
     }
 }
