@@ -109,6 +109,31 @@ public class CommentServiceTest {
 
 
     @Test
+    @DisplayName("댓글 내용 검색 테스트")
+    void findByContentsTest(){
+        // given
+        Long taskId = 1L;
+        User user = new User(1L, "l@ex.com", "name");
+        Task task = new Task(taskId, "title", user);
+        FindCommentRequestDto requestDto = new FindCommentRequestDto("댓글");
+
+        Comment comment1 = new Comment("댓글1", user, task);
+        Comment comment2 = new Comment("덧글2", user, task);
+        List<Comment> commentList = List.of(comment1, comment2);
+
+        given(commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(taskId, "댓글"))
+                .willReturn(commentList);
+
+        // when
+        List<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto);
+
+        // then
+        assertEquals(2, responseDto.size());
+        assertTrue(responseDto.get(0).getContents().contains("댓글"));
+    }
+
+
+    @Test
     @DisplayName("댓글 수정 테스트")
     void updateCommentTest(){
         // given
