@@ -59,6 +59,7 @@ public class StatisticsController {
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
             @RequestParam(required = false) LocalDate from
     ) {
+        if (from == null) from = LocalDate.now();
         return CustomMapper.responseEntity(statisticsService.getWeekFinishTaskCounts(from), HttpStatus.OK, true);
     }
 
