@@ -1,25 +1,25 @@
 package com.example.taskproject.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
-//@AllArgsConstructor
+@Setter
 @NoArgsConstructor
 public class LogRequestDto {
     private Long userId;
     private String activityType;
     private Long targetId;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    @JsonFormat(shape =  JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+    @JsonFormat(shape =  JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     private int page = 0;
     private int size = 10;
@@ -30,7 +30,7 @@ public class LogRequestDto {
         else return PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "activityType"));
     }
 
-    public LogRequestDto(Long userId, String activityType, Long targetId, LocalDateTime startDate, LocalDateTime endDate, int page, int size, boolean sortByTime){
+    public LogRequestDto(Long userId, String activityType, Long targetId, LocalDate startDate, LocalDate endDate, int page, int size, boolean sortByTime){
         this.userId = userId;
         this.activityType = activityType;
         this.targetId = targetId;

@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
-class ActiveLogRepositoryTest {
+class ActiveLogTest {
     @Autowired
     private ActiveLogRepository activeLogRepository;
     @Autowired
@@ -31,20 +31,70 @@ class ActiveLogRepositoryTest {
     @Test
     void test_search_conditions(){
         //given
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         activeLogRepository.saveAll(List.of(
-                new ActiveLog(1L, "LOGIN", 1L, now.minusDays(3)),
-                new ActiveLog(1L, "LOGOUT", 1L, now.minusDays(2)),
-                new ActiveLog(2L, "LOGIN", 2L, now.minusDays(1)),
-                new ActiveLog(3L, "UPDATE", 3L, now)
+                new ActiveLog(1L, "LOGIN", 1L),
+                new ActiveLog(1L, "LOGOUT", 1L),
+                new ActiveLog(2L, "LOGIN", 2L),
+                new ActiveLog(3L, "UPDATE", 3L)
         ));
         em.flush();
         em.clear();
 
         //when
-        LogRequestDto logRequest = new LogRequestDto(1L, "LOGIN", null, now.minusDays(4), now.minusDays(2), 0, 10, true);
+        LogRequestDto logRequest = new LogRequestDto(1L, "LOGIN", null, now.minusDays(1), now.plusDays(1), 0, 10, true);
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createTime"));
+        Page<ActiveLog> result = activeLogRepository.findActiveLogsDynamic(logRequest, pageable);
+
+        //then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getActivityType()).isEqualTo("LOGIN");
+        assertThat(result.getContent().get(0).getUserId()).isEqualTo(1L);
+    }
+
+    @Test
+    void test_search_conditions_activityType(){
+        //given
+        LocalDate now = LocalDate.now();
+        activeLogRepository.saveAll(List.of(
+                new ActiveLog(1L, "LOGIN", 1L),
+                new ActiveLog(1L, "LOGOUT", 1L),
+                new ActiveLog(2L, "LOGIN", 2L),
+                new ActiveLog(3L, "UPDATE", 3L)
+        ));
+        em.flush();
+        em.clear();
+
+        //when
+        LogRequestDto logRequest = new LogRequestDto(1L, "LOGIN", null, now.minusDays(1), now.plusDays(1), 0, 10, true);
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "activityType"));
+        Page<ActiveLog> result = activeLogRepository.findActiveLogsDynamic(logRequest, pageable);
+
+        //then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getActivityType()).isEqualTo("LOGIN");
+        assertThat(result.getContent().get(0).getUserId()).isEqualTo(1L);
+    }
+
+    @Test
+    void test_search_conditions_noSort(){
+        //given
+        LocalDate now = LocalDate.now();
+        activeLogRepository.saveAll(List.of(
+                new ActiveLog(1L, "LOGIN", 1L),
+                new ActiveLog(1L, "LOGOUT", 1L),
+                new ActiveLog(2L, "LOGIN", 2L),
+                new ActiveLog(3L, "UPDATE", 3L)
+        ));
+        em.flush();
+        em.clear();
+
+        //when
+        LogRequestDto logRequest = new LogRequestDto(1L, "LOGIN", null, now.minusDays(1), now.plusDays(1), 0, 10, true);
+
+        Pageable pageable = PageRequest.of(0, 10);
         Page<ActiveLog> result = activeLogRepository.findActiveLogsDynamic(logRequest, pageable);
 
         //then
