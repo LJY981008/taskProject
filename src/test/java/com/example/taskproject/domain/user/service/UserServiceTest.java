@@ -1,6 +1,8 @@
 package com.example.taskproject.domain.user.service;
 
+import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.entity.User;
+import com.example.taskproject.common.enums.UserRole;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.common.util.JwtUtil;
@@ -131,6 +133,20 @@ class UserServiceTest {
         //when + then
         CustomException exception = assertThrows(CustomException.class, () -> userService.login(request));
         Assertions.assertEquals("잘못된 사용자명 또는 비밀번호입니다", exception.getCustomMessage());
+        mockStatic.close();
+
+    }
+
+    @Test
+    @DisplayName("회원 조회 실패")
+    void 회원_조회_실패() {
+        //given
+        AuthUserDto userDto = new AuthUserDto(1L, "test@naver.com", UserRole.USER);
+        Mockito.when(userRepository.findById(userDto.getId())).thenReturn(Optional.empty());
+
+        //when+ then
+        CustomException exception = assertThrows(CustomException.class, () -> userService.getUser(userDto));
+        Assertions.assertEquals("존재하지 않는 유저입니다.", exception.getCustomMessage());
         mockStatic.close();
 
     }
