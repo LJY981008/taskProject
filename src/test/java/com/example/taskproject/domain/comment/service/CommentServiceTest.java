@@ -230,6 +230,6 @@ public class CommentServiceTest {
         CustomException exception = assertThrows(CustomException.class, () ->
                 commentService.deleteComment(taskId, commentId, userDto));
 
-        assertEquals(INVALID_REQUEST, exception.getErrorCode());
+        assertEquals(EMAIL_NOT_SAME_COMMENT_AUTHOR, exception.getErrorCode());
     }
 }

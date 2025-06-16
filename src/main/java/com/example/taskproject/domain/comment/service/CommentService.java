@@ -184,7 +184,7 @@ public class CommentService {
 
         // 로그인된 사용자와 댓글 작성자의 이메일이 일치하지 않을 경우 예외 처리
         if(!comment.getAuthor().getEmail().equals(user.getEmail())){
-            throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage());
+            throw new CustomException(EMAIL_NOT_SAME_COMMENT_AUTHOR, EMAIL_NOT_SAME_COMMENT_AUTHOR.getMessage());
         }
 
         comment.delete();
