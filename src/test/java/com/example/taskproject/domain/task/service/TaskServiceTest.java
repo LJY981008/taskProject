@@ -157,5 +157,29 @@ public class TaskServiceTest {
 
     }
 
+    @Test
+    public void 태스크삭제(){
+        // given
+        Long taskId = 1L;
+        Task task = new Task();
+        task.setTaskId(taskId);
+
+        User author = new User();
+        author.setUserId(authUserDto.getId());
+        task.setAuthor(author);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        taskService.deleteTask(taskId, authUserDto);
+
+        // then
+        verify(taskRepository, times(1)).save(task);
+        assertThat(task.isDeleted()).isTrue();
+        assertThat(task.getDeletedAt()).isNotNull();
+
+    }
+
 
 }
