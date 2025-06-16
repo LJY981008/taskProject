@@ -19,6 +19,14 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     open-in-view: false
 
+springdoc:
+    api-docs:
+      enabled: true
+      path: /api-docs # springdoc.api-docs.path
+    swagger-ui:
+      enabled: true
+      path: /swagger-ui.html # springdoc.swagger-ui.path
+
 jwt:
   secret:
     key: ${SECRET_KEY}
