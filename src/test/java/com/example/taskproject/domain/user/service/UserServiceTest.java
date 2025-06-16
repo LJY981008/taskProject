@@ -10,6 +10,7 @@ import com.example.taskproject.common.util.PasswordEncoder;
 import com.example.taskproject.domain.user.dto.LoginRequest;
 import com.example.taskproject.domain.user.dto.RegisterRequest;
 import com.example.taskproject.domain.user.dto.UserResponse;
+import com.example.taskproject.domain.user.dto.WithdrawRequest;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,12 +143,42 @@ class UserServiceTest {
     void 회원_조회_실패() {
         //given
         AuthUserDto userDto = new AuthUserDto(1L, "test@naver.com", UserRole.USER);
-        Mockito.when(userRepository.findById(userDto.getId())).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUserIdAndDeletedFalse(userDto.getId())).thenReturn(Optional.empty());
 
         //when+ then
         CustomException exception = assertThrows(CustomException.class, () -> userService.getUser(userDto));
-        Assertions.assertEquals("존재하지 않는 유저입니다.", exception.getCustomMessage());
+        Assertions.assertEquals("존재하지 않거나 탈퇴한 유저입니다.", exception.getCustomMessage());
         mockStatic.close();
+    }
 
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void 회원_탈퇴_성공() {
+        User user = Mockito.mock(User.class);
+        AuthUserDto userDto = Mockito.mock(AuthUserDto.class);
+        WithdrawRequest request = new WithdrawRequest("Qwer!234");
+        Mockito.when(userRepository.findByUserIdAndDeletedFalse(userDto.getId())).thenReturn(Optional.of(user));
+        Mockito.when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(Boolean.TRUE);
+        // when + then
+        userService.withdraw(request, userDto);
+        Mockito.verify(userRepository,Mockito.times(1)).softDeleteById(user.getUserId());
+        mockStatic.close();
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 시 비밀번호 불일치")
+    void 회원탈퇴_실패_비밀번호_불일치() {
+
+        //given
+        User user = Mockito.mock(User.class);
+        AuthUserDto userDto = Mockito.mock(AuthUserDto.class);
+        WithdrawRequest request = new WithdrawRequest("Qwer!234");
+        Mockito.when(userRepository.findByUserIdAndDeletedFalse(userDto.getId())).thenReturn(Optional.of(user));
+        Mockito.when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(Boolean.FALSE);
+
+        // when + then
+        CustomException exception = assertThrows(CustomException.class, () -> userService.withdraw(request, userDto));
+        Assertions.assertEquals("비밀번호가 일치하지 않습니다.", exception.getCustomMessage());
+        mockStatic.close();
     }
 }
