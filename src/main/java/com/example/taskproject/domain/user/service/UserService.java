@@ -49,13 +49,14 @@ public class UserService {
     }
 
     public UserResponse getUser(AuthUserDto userDto) {
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+
         return CustomMapper.toDto(user, UserResponse.class);
     }
 
     @Transactional
     public void withdraw(WithdrawRequest request, AuthUserDto userDto) {
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.PASSWORD_MISMATCH);
         }
