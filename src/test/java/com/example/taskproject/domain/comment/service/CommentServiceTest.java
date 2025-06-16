@@ -21,8 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.taskproject.common.enums.CustomErrorCode.COMMENT_IS_EQUAL;
-import static com.example.taskproject.common.enums.CustomErrorCode.COMMENT_NOT_ENTERED;
+import static com.example.taskproject.common.enums.CustomErrorCode.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -131,6 +130,7 @@ public class CommentServiceTest {
         // then
         assertEquals(2, responseDto.size());
         assertTrue(responseDto.get(0).getContents().contains("댓글"));
+        assertFalse(responseDto.get(1).getContents().contains("댓글"));
     }
 
 
@@ -207,5 +207,29 @@ public class CommentServiceTest {
         // then
         assertNotNull(responseDto);
         assertTrue(responseDto.isDeleted());
+    }
+
+
+    @Test
+    @DisplayName("로그인한 사용자와 댓글 작성자가 동일하지 않을 때 댓글 삭제 실패 테스트")
+    void NotSameUserEmailTest(){
+        // given
+        Long taskId = 1L;
+        Long commentId = 1L;
+        User user = new User(1L, "l@ex.com", "name");
+        Task task = new Task(taskId, "title", user);
+        Comment comment = new Comment("댓글1", user, task);
+
+        AuthUserDto userDto = new AuthUserDto(1L, "fail@ex.com", UserRole.USER);
+
+        given(commentRepository.findByCommentIdAndDeletedFalse(commentId)).willReturn(Optional.of(comment));
+        given(userRepository.findUserByEmailAndDeletedFalse("fail@ex.com")).
+                willReturn(Optional.of(new User(1L, "fail@ex.com", "other user")));
+
+        // when & then
+        CustomException exception = assertThrows(CustomException.class, () ->
+                commentService.deleteComment(taskId, commentId, userDto));
+
+        assertEquals(INVALID_REQUEST, exception.getErrorCode());
     }
 }
