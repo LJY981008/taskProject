@@ -29,7 +29,8 @@ class StatisticsServiceTest {
         //given
         List<StatusCount> statusCounts = List.of(
                 new StatusCount(TaskStatus.TODO, 2L),
-                new StatusCount(TaskStatus.IN_PROGRESS, 3L)
+                new StatusCount(TaskStatus.IN_PROGRESS, 3L),
+                new StatusCount(TaskStatus.DONE, 0L)
         );
 
         GetTaskStatusResponse getTaskStatusResponse = new GetTaskStatusResponse(2L, 3L, 0L);
