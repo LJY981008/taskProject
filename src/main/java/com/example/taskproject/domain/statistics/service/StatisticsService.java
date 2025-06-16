@@ -35,31 +35,18 @@ public class StatisticsService {
         return new GetTaskStatusResponse(todo, inProgress, done);
     }
 
-    public GetTeamFinishTaskResponse getTeamFinishTaskCounts(String email) {
-
-        TeamTaskStatusCount teamTaskStatusCount = taskRepository.findTeamTaskStatusCount(email, TaskStatus.DONE);
-
-        return new GetTeamFinishTaskResponse(
-                teamTaskStatusCount.getTotalTaskCount(),
-                teamTaskStatusCount.getTeamFinishTaskCount(),
-                teamTaskStatusCount.getMyFinishTaskCount());
+    public TeamTaskStatusCount getTeamFinishTaskCounts(String email) {
+        return taskRepository.findTeamTaskStatusCount(email, TaskStatus.DONE);
     }
 
-    public GetWeekFinishTaskResponse getWeekFinishTaskCounts(LocalDate from) {
+    public WeekFinishTaskCount getWeekFinishTaskCounts(LocalDate from) {
         LocalDateTime end = from.atStartOfDay();
         LocalDateTime start = end.minusDays(7);
 
-        WeekFinishTaskCount weekFinishTaskCount = taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end);
-
-        return new GetWeekFinishTaskResponse(
-                weekFinishTaskCount.getWeekTaskCount(),
-                weekFinishTaskCount.getWeekFinishTaskCount());
+        return taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end);
     }
 
-    public Object getOverdueTaskCounts() {
-        OverDueTaskCount overDueTaskCount = taskRepository.findOverDueTaskCount();
-        return new GetOverDueTaskResponse(
-                overDueTaskCount.getOverDusTaskCount()
-        );
+    public OverDueTaskCount getOverdueTaskCounts() {
+        return taskRepository.findOverDueTaskCount();
     }
 }

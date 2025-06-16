@@ -49,17 +49,16 @@ class StatisticsServiceTest {
     void 팀_완료_Task_수_가져오기_성공() {
         //given
         TeamTaskStatusCount teamTaskStatusCount = new TeamTaskStatusCount(30L,15L,6L);
-        GetTeamFinishTaskResponse getTeamFinishTaskResponse = new GetTeamFinishTaskResponse(30L, 15L, 6L);
 
         given(taskRepository.findTeamTaskStatusCount("nana@naver.com", TaskStatus.DONE)).willReturn(teamTaskStatusCount);
 
         //when
-        GetTeamFinishTaskResponse teamFinishTaskCounts = statisticsService.getTeamFinishTaskCounts("nana@naver.com");
+        TeamTaskStatusCount teamFinishTaskCounts = statisticsService.getTeamFinishTaskCounts("nana@naver.com");
 
         //then
-        assertEquals(teamFinishTaskCounts.getTotalTaskCount(), getTeamFinishTaskResponse.getTotalTaskCount());
-        assertEquals(teamFinishTaskCounts.getTeamFinishTaskCount(), getTeamFinishTaskResponse.getTeamFinishTaskCount());
-        assertEquals(teamFinishTaskCounts.getMyFinishTaskCount(), getTeamFinishTaskResponse.getMyFinishTaskCount());
+        assertEquals(30L, teamFinishTaskCounts.getTotalTaskCount());
+        assertEquals(15L, teamFinishTaskCounts.getTeamFinishTaskCount());
+        assertEquals(6L, teamFinishTaskCounts.getMyFinishTaskCount());
     }
 
     @Test
@@ -70,15 +69,27 @@ class StatisticsServiceTest {
         LocalDateTime end = from.atStartOfDay();
         LocalDateTime start = end.minusDays(7);
 
-        GetWeekFinishTaskResponse getWeekFinishTaskResponse = new GetWeekFinishTaskResponse(100L, 80L);
-
         given(taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end)).willReturn(weekFinishTaskCount);
 
         //when
-        GetWeekFinishTaskResponse weekFinishTaskCounts = statisticsService.getWeekFinishTaskCounts(from);
+        WeekFinishTaskCount weekFinishTaskCounts = statisticsService.getWeekFinishTaskCounts(from);
 
         //then
-        assertEquals(weekFinishTaskCounts.getWeekTaskCount(), getWeekFinishTaskResponse.getWeekTaskCount());
-        assertEquals(weekFinishTaskCounts.getWeekFinishTaskCount(), getWeekFinishTaskResponse.getWeekFinishTaskCount());
+        assertEquals(100L, weekFinishTaskCounts.getWeekTaskCount());
+        assertEquals(80L, weekFinishTaskCounts.getWeekFinishTaskCount());
+    }
+
+    @Test
+    void TODO_또는_IN_PROGRESS_중_마감된_Task_수_가져오기_성공() {
+        //given
+        OverDueTaskCount overDueTaskCount = new OverDueTaskCount(40L);
+
+        given(taskRepository.findOverDueTaskCount()).willReturn(overDueTaskCount);
+
+        //when
+        OverDueTaskCount overdueTaskCounts = statisticsService.getOverdueTaskCounts();
+
+        //then
+        assertEquals(40L, overdueTaskCounts.getOverDusTaskCount());
     }
 }
