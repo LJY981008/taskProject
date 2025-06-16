@@ -10,7 +10,9 @@ public enum CustomErrorCode {
     USERNAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST, "유저네임 형식이 잘못되었습니다."), // (회원가입, 로그인) 유저네임 형식 틀림
     ROLE_INVALID_FORMAT(HttpStatus.BAD_REQUEST, "유효하지 않은 UserRole"),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이상해씨"),
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),;
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 사용자명입니다");
 
     private final HttpStatus httpStatus;
     private final String message;
