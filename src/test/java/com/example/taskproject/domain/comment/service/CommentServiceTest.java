@@ -5,6 +5,7 @@ import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.UserRole;
+import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.comment.service.CommentService;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.taskproject.common.enums.CustomErrorCode.COMMENT_NOT_ENTERED;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -60,6 +62,25 @@ public class CommentServiceTest {
 
         // then
         assertNotNull(responseDto);
+    }
+
+    @Test
+    @DisplayName("내용 미입력으로 댓글 생성 실패")
+    void EmptyContentsCommentTest(){
+        // given
+        CreateCommentRequestDto requestDto = new CreateCommentRequestDto("");
+        AuthUserDto userDto = new AuthUserDto(1L, "l@ex.com", UserRole.USER);
+        User user = new User(1L, "l@ex.com", "name");
+        Task task = new Task(1L, "title", user);
+
+        given(userRepository.findUserByEmailAndDeletedFalse("l@ex.com")).willReturn(Optional.of(user));
+        given(taskRepository.findTaskByTaskIdAndDeletedFalse(1L)).willReturn(Optional.of(task));
+
+        // when & then
+        CustomException exception = assertThrows(CustomException.class, () ->
+                        commentService.createComment(1L, requestDto, userDto));
+
+        assertEquals(COMMENT_NOT_ENTERED, exception.getErrorCode());
     }
 
 
