@@ -2,16 +2,14 @@ package com.example.taskproject.domain.statistics.controller;
 
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.util.CustomMapper;
+import com.example.taskproject.domain.statistics.dto.WeekFinishTaskDto;
 import com.example.taskproject.domain.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -57,10 +55,9 @@ public class StatisticsController {
      */
     @GetMapping("/weekly-trend")
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
-            @RequestParam(required = false) LocalDate from
+            @RequestBody WeekFinishTaskDto from
     ) {
-        if (from == null) from = LocalDate.now();
-        return CustomMapper.responseEntity(statisticsService.getWeekFinishTaskCounts(from), HttpStatus.OK, true);
+        return CustomMapper.responseEntity(statisticsService.getWeekFinishTaskCounts(from.getDate()), HttpStatus.OK, true);
     }
 
     /**
