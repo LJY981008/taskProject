@@ -9,9 +9,11 @@ import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
-import org.hibernate.sql.Delete;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.taskproject.common.enums.CustomErrorCode.*;
 
@@ -62,6 +64,64 @@ public class CommentService {
 
         return new CreateCommentResponseDto(comment);
     }
+
+
+    /**
+     * 댓글 전체 조회
+     *
+     * @param taskId 태스크 id
+     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     */
+    @Transactional
+    public List<FindCommentResponseDto> findAll(Long taskId){
+
+        List<Comment> commentList = commentRepository.findByTask_TaskIdAndDeletedFalse(taskId);
+
+        if (commentList == null || commentList.isEmpty()) {
+            throw new CustomException(COMMENT_NOT_FOUND);
+        }
+
+        return commentList
+                .stream()
+                .map(FindCommentResponseDto::new)
+                .collect(Collectors.toList());
+
+    }
+
+
+    /**
+     * 댓글 내용으로 댓글 검색
+     *
+     * @param taskId 태스크 id
+     * @param requestDto 요청 dto
+     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     */
+    @Transactional
+    public List<FindCommentResponseDto> findByContents(
+            Long taskId,
+            FindCommentRequestDto requestDto){
+
+        if(requestDto.getContents() == null || requestDto.getContents().isBlank()){
+            throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
+        }
+
+        List<Comment> commentList =
+                commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(
+                        taskId, requestDto.getContents());
+
+        if (commentList == null || commentList.isEmpty()) {
+            throw new CustomException(COMMENT_NOT_FOUND);
+        }
+
+        return commentList
+                .stream()
+                .map(FindCommentResponseDto::new)
+                .collect(Collectors.toList());
+
+
+    }
+
+
 
 
     /**

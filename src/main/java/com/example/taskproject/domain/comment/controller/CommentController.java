@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 댓글 기능의 HTTP 요청을 처리하는 컨트롤러
  *
@@ -33,6 +35,28 @@ public class CommentController {
         CreateCommentResponseDto responseDto = commentService.createComment(taskId, requestDto, userDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<FindCommentResponseDto>> findAllComment(
+            @PathVariable Long taskId){
+
+        List<FindCommentResponseDto> responseDto = commentService.findAll(taskId);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<FindCommentResponseDto>> findByContents(
+            @PathVariable Long taskId,
+            @RequestBody FindCommentRequestDto requestDto){
+
+        List<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
 
