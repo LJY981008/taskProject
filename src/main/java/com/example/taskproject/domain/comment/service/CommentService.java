@@ -85,7 +85,6 @@ public class CommentService {
                 .stream()
                 .map(FindCommentResponseDto::new)
                 .collect(Collectors.toList());
-
     }
 
 
@@ -117,11 +116,7 @@ public class CommentService {
                 .stream()
                 .map(FindCommentResponseDto::new)
                 .collect(Collectors.toList());
-
-
     }
-
-
 
 
     /**
@@ -166,8 +161,6 @@ public class CommentService {
         commentRepository.save(comment);
 
         return new UpdateCommentResponseDto(comment);
-
-
     }
 
 
@@ -197,10 +190,6 @@ public class CommentService {
         comment.delete();
         commentRepository.save(comment);
 
-
         return new DeleteCommentResponseDto(comment);
-
     }
-
-
 }

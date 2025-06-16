@@ -25,7 +25,14 @@ public class CommentController {
     }
 
 
-
+    /**
+     * <p>댓글 생성</p>
+     *
+     * @param taskId 태스크 id
+     * @param requestDto 요청 dto
+     * @param userDto 로그인한 사용자 dto
+     * @return CreateCommentResponseDto 생성된 댓글 응답 dto
+     */
     @PostMapping
     public ResponseEntity<CreateCommentResponseDto> createComment(
             @PathVariable Long taskId,
@@ -38,6 +45,12 @@ public class CommentController {
     }
 
 
+    /**
+     * 댓글 전체 조회
+     *
+     * @param taskId 태스크 id
+     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     */
     @GetMapping
     public ResponseEntity<List<FindCommentResponseDto>> findAllComment(
             @PathVariable Long taskId){
@@ -45,10 +58,16 @@ public class CommentController {
         List<FindCommentResponseDto> responseDto = commentService.findAll(taskId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
-
     }
 
 
+    /**
+     * 댓글 내용으로 댓글 검색
+     *
+     * @param taskId 태스크 id
+     * @param requestDto 요청 dto
+     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     */
     @GetMapping
     public ResponseEntity<List<FindCommentResponseDto>> findByContents(
             @PathVariable Long taskId,
@@ -60,7 +79,15 @@ public class CommentController {
     }
 
 
-
+    /**
+     * <p>댓글 수정</p>
+     *
+     * @param taskId 태스크 id
+     * @param commentId 댓글 id
+     * @param requestDto 요청 dto
+     * @param userDto 로그인된 사용자 dto
+     * @return UpdateCommentResponseDto 수정된 댓글 응답 dto
+     */
     @PutMapping("/{commentId}")
     public ResponseEntity<UpdateCommentResponseDto> updateComment(
             @PathVariable Long taskId,
@@ -71,10 +98,17 @@ public class CommentController {
         UpdateCommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
-
     }
 
 
+    /**
+     * <p>댓글 삭제</p>
+     *
+     * @param taskId 태스크 id
+     * @param commentId 요청 dto
+     * @param userDto 로그인된 사용자 dto
+     * @return DeleteCommentResponseDto 삭제된 댓글 응답 dto
+     */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<DeleteCommentResponseDto> deleteComment(
             @PathVariable Long taskId,
@@ -84,6 +118,5 @@ public class CommentController {
         DeleteCommentResponseDto responseDto = commentService.deleteComment(taskId, commentId, userDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
-
     }
 }
