@@ -1,4 +1,4 @@
-package com.example.taskproject.comment.service;
+package com.example.taskproject.domain.comment.service;
 
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.entity.Comment;
