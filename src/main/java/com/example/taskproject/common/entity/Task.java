@@ -33,4 +33,12 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "manager_id")
     private User manager;
 
+    public Task(){
+    }
+
+    public Task(Long taskId, String title, User author){
+        this.taskId = taskId;
+        this.title = title;
+        this.author = author;
+    }
 }
