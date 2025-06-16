@@ -4,10 +4,12 @@ import com.example.taskproject.common.enums.TaskPriority;
 import com.example.taskproject.common.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "Tasks")
 public class Task extends BaseEntity {
@@ -24,6 +26,8 @@ public class Task extends BaseEntity {
     private TaskStatus taskStatus;
 
     private LocalDateTime deadline;
+    //추가
+    private LocalDateTime startedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")

@@ -1,4 +1,132 @@
 package com.example.taskproject.domain.task.service;
 
+
+import com.example.taskproject.common.dto.AuthUserDto;
+import com.example.taskproject.common.dto.TaskCreateRequestDto;
+import com.example.taskproject.common.dto.TaskResponseDto;
+import com.example.taskproject.common.dto.TaskUpdateRequestDto;
+import com.example.taskproject.common.entity.Task;
+import com.example.taskproject.common.entity.User;
+import com.example.taskproject.common.enums.TaskStatus;
+import com.example.taskproject.domain.task.repository.TaskRepository;
+import com.example.taskproject.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@RequiredArgsConstructor
+@Service
 public class TaskService {
+
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+
+
+
+    // 태스크 생성
+    @Transactional
+    public TaskResponseDto createTask(TaskCreateRequestDto request, AuthUserDto userDto) {
+        User author = userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("작성자를 찾을수 없습니다"));
+
+        User manager = null;
+        if(request.getManagerId() != null) {
+            manager = userRepository.findById(request.getManagerId())
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 담당자 입니다"));
+        }
+
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setContents(request.getContent());
+        task.setTaskPriority(request.getTaskPriority());
+        task.setTaskStatus(request.getTaskStatus() != null ? request.getTaskStatus() : TaskStatus.TODO);
+        task.setDeadline(request.getDeadline());
+
+        if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
+            task.setStartedAt(LocalDateTime.now());
+        } else {
+            task.setStartedAt(null);
+        }
+
+        task.setAuthor(author);
+        task.setManager(manager);
+
+        Task saved = taskRepository.save(task);
+        return new TaskResponseDto(saved);
+
+    }
+
+    // 태스크 수정
+    @Transactional
+    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request, AuthUserDto userDto) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테스크 입니다"));
+
+        if(!task.getAuthor().getUserId().equals(userDto.getId())) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
+        }
+
+        if(request.getTitle() != null && !request.getTitle().isBlank()) {
+            task.setTitle(request.getTitle());
+        }
+        if(request.getContent() != null) {
+            task.setContents(request.getContent());
+        }
+        if(request.getTaskPriority() != null) {
+            task.setTaskPriority(request.getTaskPriority());
+        }
+        if(request.getDeadline() != null) {
+            task.setDeadline(request.getDeadline());
+        }
+        if(request.getManagerId() != null) {
+            User manager = userRepository.findById(request.getManagerId())
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 담당자 입니다"));
+            task.setManager(manager);
+        }
+        if(request.getTaskStatus() != null && !request.getTaskStatus().equals(task.getTaskStatus())) {
+            task.setTaskStatus(request.getTaskStatus());
+            if (request.getTaskStatus() == TaskStatus.IN_PROGRESS && task.getStartedAt() == null) {
+                task.setStartedAt(LocalDateTime.now());
+            }
+        }
+        Task saved = taskRepository.save(task);
+        return new TaskResponseDto(saved);
+    }
+
+    // 태스크 전체 조회
+    @Transactional(readOnly = true)
+    public Page<TaskResponseDto> getAllTasks(Pageable pageable){
+        Page<Task> tasks = taskRepository.findAll(pageable);
+        return tasks.map(TaskResponseDto::new);
+    }
+
+    // 태스크 단건 조회
+    @Transactional(readOnly = true)
+    public TaskResponseDto getTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 태스크 입니다."));
+        return new TaskResponseDto(task);
+    }
+
+    // 태스크 삭제(soft delete)
+    @Transactional
+    public void deleteTask(Long taskId, AuthUserDto userDto) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 태스크입니다."));
+
+        if (!task.getAuthor().getUserId().equals(userDto.getId())) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+        task.setDeleted(true);
+        task.setDeletedAt(LocalDateTime.now());
+        taskRepository.save(task);
+    }
+
+
 }
