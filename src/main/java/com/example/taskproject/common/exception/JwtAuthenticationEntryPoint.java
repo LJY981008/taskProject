@@ -12,6 +12,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -21,10 +23,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        Map<String, Object> errors = Map.of(
-                "errorMessage", authException.getMessage(),
-                "message", "인증 실패"
-        );
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("success", false);
+        errors.put("message", "인증이 필요합니다");
+        errors.put("data", null);
+        errors.put("timestamp", LocalDateTime.now());
+
         String responseBody = objectMapper.writeValueAsString(errors);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
