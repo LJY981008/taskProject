@@ -159,12 +159,12 @@ public class TaskServiceTest {
     public void 태스크삭제(){
         // given
         Long taskId = 1L;
-        Task task = mock();
+        Task task = new Task();
         task.setTaskId(taskId);
 
         User author = mock(User.class);
-        task.setAuthor(author);
         when(author.getUserId()).thenReturn(1L);
+        task.setAuthor(author);
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
