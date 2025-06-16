@@ -1,6 +1,7 @@
 package com.example.taskproject.domain.statistics.repository;
 
 import com.example.taskproject.common.enums.TaskStatus;
+import com.example.taskproject.domain.statistics.dto.OverDueTaskCount;
 import com.example.taskproject.domain.statistics.dto.StatusCount;
 import com.example.taskproject.domain.statistics.dto.TeamTaskStatusCount;
 import com.example.taskproject.domain.statistics.dto.WeekFinishTaskCount;
@@ -15,4 +16,6 @@ public interface StatisticsRepository {
     TeamTaskStatusCount findTeamTaskStatusCount(String authorUsername, TaskStatus taskStatus);
 
     WeekFinishTaskCount countWeekFinishTaskCountJPQL(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end);
+
+    OverDueTaskCount findOverDueTaskCount();
 }

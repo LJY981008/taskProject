@@ -1,6 +1,6 @@
 package com.example.taskproject.domain.statistics.controller;
 
-import com.example.taskproject.common.util.Responser;
+import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,20 +25,25 @@ public class StatisticsController {
     @GetMapping("/task-status")
     public ResponseEntity<Map<String, Object>> getTaskStatusStatistics(
     ) {
-        return Responser.responseEntity(statisticsService.getTaskStatusCounts(), HttpStatus.OK);
+        return CustomMapper.responseEntity(statisticsService.getTaskStatusCounts(), HttpStatus.OK, true);
     }
 
     @GetMapping("/team-progress")
     public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
             @AuthenticationPrincipal User user
     ) {
-        return Responser.responseEntity(statisticsService.getTeamFinishTaskCounts(user.getUsername()), HttpStatus.OK);
+        return CustomMapper.responseEntity(statisticsService.getTeamFinishTaskCounts(user.getUsername()), HttpStatus.OK, true);
     }
 
     @GetMapping("/weekly-trend")
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
             @RequestParam(required = false) LocalDate from
     ) {
-        return Responser.responseEntity(statisticsService.getWeekFinishTaskCounts(from), HttpStatus.OK);
+        return CustomMapper.responseEntity(statisticsService.getWeekFinishTaskCounts(from), HttpStatus.OK, true);
+    }
+
+    @GetMapping("/over-due")
+    public ResponseEntity<Map<String, Object>> getOverdueTaskStatistics() {
+        return CustomMapper.responseEntity(statisticsService.getOverdueTaskCounts(),HttpStatus.OK, true);
     }
 }

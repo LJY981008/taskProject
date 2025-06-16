@@ -79,4 +79,24 @@ public class StatisticsRepositoryImpl implements StatisticsRepository{
                 .where(task.deleted.isFalse())
                 .fetchOne();
     }
+
+    @Override
+    public OverDueTaskCount findOverDueTaskCount() {
+        NumberExpression<Long> overDueCount = new CaseBuilder()
+                .when(
+                        task.taskStatus.eq(TaskStatus.TODO)
+                        .or(task.taskStatus.eq(TaskStatus.IN_PROGRESS))
+                                .and(task.deadline.lt(LocalDateTime.now()))
+                )
+                .then(1L)
+                .otherwise(0L).sum();
+
+        return queryFactory.select(
+                new QOverDueTaskCount(
+                        overDueCount
+                ))
+                .from(task)
+                .where(task.deleted.isFalse())
+                .fetchOne();
+    }
 }

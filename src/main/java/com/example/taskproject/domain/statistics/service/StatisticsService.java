@@ -55,4 +55,11 @@ public class StatisticsService {
                 weekFinishTaskCount.getWeekTaskCount(),
                 weekFinishTaskCount.getWeekFinishTaskCount());
     }
+
+    public Object getOverdueTaskCounts() {
+        OverDueTaskCount overDueTaskCount = taskRepository.findOverDueTaskCount();
+        return new GetOverDueTaskResponse(
+                overDueTaskCount.getOverDusTaskCount()
+        );
+    }
 }
