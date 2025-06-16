@@ -69,7 +69,7 @@ class StatisticsServiceTest {
         LocalDateTime end = from.atTime(23, 59, 59, 999_999_999);
         LocalDateTime start = end.minusDays(7);
 
-        given(taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end)).willReturn(weekFinishTaskCount);
+        given(taskRepository.findWeekFinishTaskCounts(TaskStatus.DONE, start, end)).willReturn(weekFinishTaskCount);
 
         //when
         WeekFinishTaskCount weekFinishTaskCounts = statisticsService.getWeekFinishTaskCounts(from);

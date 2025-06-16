@@ -57,7 +57,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository{
     }
 
     @Override
-    public WeekFinishTaskCount countWeekFinishTaskCountJPQL(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end) {
+    public WeekFinishTaskCount findWeekFinishTaskCounts(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end) {
 
         NumberExpression<Long> weekTaskCount = new CaseBuilder()
                 .when(task.createdAt.between(start, end))

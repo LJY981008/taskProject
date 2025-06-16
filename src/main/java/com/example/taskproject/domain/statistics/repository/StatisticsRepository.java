@@ -15,7 +15,7 @@ public interface StatisticsRepository {
 
     TeamTaskStatusCount findTeamTaskStatusCount(String authorUsername, TaskStatus taskStatus);
 
-    WeekFinishTaskCount countWeekFinishTaskCountJPQL(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end);
+    WeekFinishTaskCount findWeekFinishTaskCounts(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end);
 
     OverDueTaskCount findOverDueTaskCount();
 }

@@ -43,7 +43,7 @@ public class StatisticsService {
         LocalDateTime end = from.atTime(23, 59, 59, 999_999_999);
         LocalDateTime start = end.minusDays(7);
 
-        return taskRepository.countWeekFinishTaskCountJPQL(TaskStatus.DONE, start, end);
+        return taskRepository.findWeekFinishTaskCounts(TaskStatus.DONE, start, end);
     }
 
     public OverDueTaskCount getOverdueTaskCounts() {
