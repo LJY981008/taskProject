@@ -5,6 +5,7 @@ import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.exception.CustomException;
+import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.task.repository.TaskRepository;
@@ -62,7 +63,7 @@ public class CommentService {
         Comment comment = new Comment(requestDto.getContents(), user, task);
         commentRepository.save(comment);
 
-        return new CreateCommentResponseDto(comment);
+        return CustomMapper.toDto(comment, CreateCommentResponseDto.class);
     }
 
 
@@ -81,9 +82,10 @@ public class CommentService {
             throw new CustomException(COMMENT_NOT_FOUND);
         }
 
+
         return commentList
                 .stream()
-                .map(FindCommentResponseDto::new)
+                .map(comment -> CustomMapper.toDto(comment, FindCommentResponseDto.class))
                 .collect(Collectors.toList());
     }
 
@@ -112,9 +114,10 @@ public class CommentService {
             throw new CustomException(COMMENT_NOT_FOUND);
         }
 
+
         return commentList
                 .stream()
-                .map(FindCommentResponseDto::new)
+                .map(comment -> CustomMapper.toDto(comment, FindCommentResponseDto.class))
                 .collect(Collectors.toList());
     }
 
@@ -160,7 +163,7 @@ public class CommentService {
         comment = new Comment(requestDto.getContents(), user, task);
         commentRepository.save(comment);
 
-        return new UpdateCommentResponseDto(comment);
+        return CustomMapper.toDto(comment, UpdateCommentResponseDto.class);
     }
 
 
@@ -190,6 +193,6 @@ public class CommentService {
         comment.delete();
         commentRepository.save(comment);
 
-        return new DeleteCommentResponseDto(comment);
+        return CustomMapper.toDto(comment, DeleteCommentResponseDto.class);
     }
 }
