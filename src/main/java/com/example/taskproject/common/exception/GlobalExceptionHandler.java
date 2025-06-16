@@ -2,11 +2,14 @@ package com.example.taskproject.common.exception;
 
 import com.example.taskproject.common.dto.CustomErrorResponseDto;
 import com.example.taskproject.common.enums.CustomErrorCode;
-import com.example.taskproject.common.enums.ValidErrorType;
+import com.example.taskproject.common.util.CustomMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,17 +24,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<CustomErrorResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        ValidErrorType validErrorType = ValidErrorType.of(e.getBindingResult().getFieldError().getDefaultMessage());
-        CustomErrorCode errorCode = switch (validErrorType) {
-            case EMAIL -> CustomErrorCode.EMAIL_INVALID_FORMAT;
-            case PASSWORD -> CustomErrorCode.PASSWORD_INVALID_FORMAT;
-            case USERNAME -> CustomErrorCode.USERNAME_INVALID_FORMAT;
-            default -> CustomErrorCode.SERVER_ERROR;
-        };
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
+        CustomErrorCode errorCode = CustomErrorCode.INVALID_REQUEST;
+        String message = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
 
-        CustomErrorResponseDto errorResponseDto = new CustomErrorResponseDto(errorCode.name(),e.getMessage());
+        CustomErrorResponseDto errorResponseDto = new CustomErrorResponseDto(errorCode.name(), message);
 
-        return new ResponseEntity<>(errorResponseDto, errorCode.getHttpStatus());
+        return CustomMapper.responseEntity(errorResponseDto, errorCode.getHttpStatus(), false);
     }
 }
