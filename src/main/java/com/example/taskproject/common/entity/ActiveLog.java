@@ -36,4 +36,10 @@ public class ActiveLog {
     @CreatedDate
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createTime;
+
+    public ActiveLog(Long userId, String activityType, Long targetId){
+        this.userId = userId;
+        this.activityType = activityType;
+        this.targetId = targetId;
+    }
 }
