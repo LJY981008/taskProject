@@ -5,13 +5,11 @@ import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.exception.CustomException;
-import com.example.taskproject.domain.comment.dto.CreateCommentRequestDto;
-import com.example.taskproject.domain.comment.dto.CreateCommentResponseDto;
-import com.example.taskproject.domain.comment.dto.UpdateCommentRequestDto;
-import com.example.taskproject.domain.comment.dto.UpdateCommentResponseDto;
+import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
+import org.hibernate.sql.Delete;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,7 +87,7 @@ public class CommentService {
 
 
         // 로그인된 사용자와 댓글 작성자의 이메일이 일치하지 않을 경우 예외 처리
-        if(!comment.getAuthor().getEmail().equals(userDto.getEmail())){
+        if(!comment.getAuthor().getEmail().equals(user.getEmail())){
             throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage());
         }
 
@@ -111,4 +109,38 @@ public class CommentService {
 
 
     }
+
+
+    /**
+     * <p>댓글 삭제</p>
+     *
+     * @param taskId 태스크 id
+     * @param commentId 요청 dto
+     * @param userDto 로그인된 사용자 dto
+     * @return DeleteCommentResponseDto 삭제된 댓글 응답 dto
+     */
+    @Transactional
+    public DeleteCommentResponseDto deleteComment(
+            Long taskId,
+            Long commentId,
+            AuthUserDto userDto){
+
+
+        User user = userRepository.findUserByEmailAndDeletedFalse(userDto.getEmail()).orElseThrow(() -> new CustomException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        Comment comment = commentRepository.findByCommentIdAndDeletedFalse(commentId).orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
+
+        // 로그인된 사용자와 댓글 작성자의 이메일이 일치하지 않을 경우 예외 처리
+        if(!comment.getAuthor().getEmail().equals(user.getEmail())){
+            throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage());
+        }
+
+        comment.delete();
+        commentRepository.save(comment);
+
+
+        return new DeleteCommentResponseDto(comment);
+
+    }
+
+
 }

@@ -1,10 +1,7 @@
 package com.example.taskproject.domain.comment.controller;
 
 import com.example.taskproject.common.dto.AuthUserDto;
-import com.example.taskproject.domain.comment.dto.CreateCommentRequestDto;
-import com.example.taskproject.domain.comment.dto.CreateCommentResponseDto;
-import com.example.taskproject.domain.comment.dto.UpdateCommentRequestDto;
-import com.example.taskproject.domain.comment.dto.UpdateCommentResponseDto;
+import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +45,19 @@ public class CommentController {
             @AuthenticationPrincipal AuthUserDto userDto){
 
         UpdateCommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
+    }
+
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<DeleteCommentResponseDto> deleteComment(
+            @PathVariable Long taskId,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal AuthUserDto userDto){
+
+        DeleteCommentResponseDto responseDto = commentService.deleteComment(taskId, commentId, userDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 

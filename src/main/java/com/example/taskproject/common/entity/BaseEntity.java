@@ -27,4 +27,10 @@ public abstract class BaseEntity {
     private boolean deleted;
 
     private LocalDateTime deletedAt;
+
+
+    public void delete(){
+        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }
