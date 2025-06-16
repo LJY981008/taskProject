@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.taskproject.common.enums.CustomErrorCode.COMMENT_IS_EQUAL;
 import static com.example.taskproject.common.enums.CustomErrorCode.COMMENT_NOT_ENTERED;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -156,6 +157,32 @@ public class CommentServiceTest {
         // then
         assertNotNull(responseDto);
         assertEquals("수정한 댓글", responseDto.getContents());
+    }
+
+
+    @Test
+    @DisplayName("동일한 내용으로 댓글 수정 실패")
+    void SameContentsFailUpdateComment(){
+        // given
+        Long taskId = 1L;
+        Long commentId = 1L;
+        String sameContent = "같은 댓글";
+        User user = new User(1L, "l@ex.com", "name");
+        Task task = new Task(taskId, "title", user);
+
+        Comment comment = new Comment(sameContent, user, task);
+        UpdateCommentRequestDto requestDto = new UpdateCommentRequestDto(sameContent);
+        AuthUserDto userDto = new AuthUserDto(1L, "l@ex.com", UserRole.USER);
+
+        given(commentRepository.findByCommentIdAndDeletedFalse(commentId)).willReturn(Optional.of(comment));
+        given(taskRepository.findTaskByTaskIdAndDeletedFalse(taskId)).willReturn(Optional.of(task));
+        given(userRepository.findUserByEmailAndDeletedFalse(userDto.getEmail())).willReturn(Optional.of(user));
+
+        // when & then
+        CustomException exception = assertThrows(CustomException.class, () ->
+                commentService.updateComment(taskId, commentId, requestDto, userDto));
+
+        assertEquals(COMMENT_IS_EQUAL, exception.getErrorCode());
     }
 
 
