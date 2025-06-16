@@ -1,5 +1,6 @@
 package com.example.taskproject.domain.user.controller;
 
+import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.user.dto.LoginRequest;
 import com.example.taskproject.domain.user.dto.LoginResponse;
@@ -10,10 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -33,5 +32,11 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequest request) {
         LoginResponse response = userService.login(request);
         return CustomMapper.responseEntity(response, HttpStatus.OK, true); //로그인이 완료되었습니다.
+    }
+
+    @GetMapping("/users/me")
+    public ResponseEntity<Map<String, Object>> getUser(@AuthenticationPrincipal AuthUserDto userDto) {
+        UserResponse response = userService.getUser(userDto);
+        return CustomMapper.responseEntity(response, HttpStatus.OK, true); // 사용자 정보를 조회했습니다.
     }
 }

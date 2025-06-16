@@ -1,5 +1,6 @@
 package com.example.taskproject.domain.user.service;
 
+import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.CustomErrorCode;
 import com.example.taskproject.common.exception.CustomException;
@@ -44,10 +45,15 @@ public class UserService {
         User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage()));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage());
+            throw new CustomException(CustomErrorCode.LOGIN_FAILED);
         }
 
         return new LoginResponse(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()));
+    }
+
+    public UserResponse getUser(AuthUserDto userDto) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        return CustomMapper.toDto(user, UserResponse.class);
     }
 
 }
