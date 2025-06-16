@@ -17,6 +17,14 @@ public class ActiveLogService {
         return activeLogRepository.findActiveLogsDynamic(logRequest, pageable);
     }
 
+    /**
+     * @author 김도연
+     * @param userId 사용자(주체) userID값
+     * @param activityType 활동 내역(LOGIN, TASK_UPDATE 등)
+     * @param targetId 대상 ID값
+     * @param request HttpServletRequest, Ip, Method, URL값 저장 위해 사용
+     * use example : activeLogService.logActivity(1L, "LOGIN", 2L, request);
+     */
     public void logActivity(Long userId, String activityType, Long targetId, HttpServletRequest request){
         ActiveLog log = new ActiveLog();
         log.setUserId(userId);
