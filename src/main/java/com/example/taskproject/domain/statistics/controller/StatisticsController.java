@@ -1,5 +1,6 @@
 package com.example.taskproject.domain.statistics.controller;
 
+import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,9 @@ public class StatisticsController {
      */
     @GetMapping("/team-progress")
     public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal AuthUserDto user
     ) {
-        return CustomMapper.responseEntity(statisticsService.getTeamFinishTaskCounts(user.getUsername()), HttpStatus.OK, true);
+        return CustomMapper.responseEntity(statisticsService.getTeamFinishTaskCounts(user.getEmail()), HttpStatus.OK, true);
     }
 
     /**
