@@ -22,11 +22,11 @@ public class TaskResponseDto {
 
     private String title;
 
-    private String contents;
+    private String description;
 
-    private TaskPriority taskPriority;
+    private TaskPriority priority;
 
-    private TaskStatus taskStatus;
+    private TaskStatus status;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dueDate;
@@ -34,15 +34,15 @@ public class TaskResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startedAt;
 
-    private UserInfo author;
+    private Long assigneeId;
 
-    private UserInfo manager;
+    private UserInfo assignee;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 
     private boolean deleted;
 
@@ -58,17 +58,14 @@ public class TaskResponseDto {
     public TaskResponseDto(Task task) {
         this.id = task.getTaskId();
         this.title = task.getTitle();
-        this.contents = task.getContents();
-        this.taskPriority = task.getTaskPriority();
-        this.taskStatus = task.getTaskStatus();
+        this.description = task.getContents();
+        this.priority = task.getTaskPriority();
+        this.status = task.getTaskStatus();
         this.dueDate = task.getDueDate();
         this.startedAt = task.getStartedAt();
         this.createdAt = task.getCreatedAt();
-        this.modifiedAt = task.getModifiedAt();
+        this.updatedAt = task.getModifiedAt();
         this.deleted = task.isDeleted();
-        this.author = new UserInfo(task.getAuthor().getUserId(), task.getAuthor().getUsername());
-        if (task.getManager() != null) {
-            this.manager = new UserInfo(task.getManager().getUserId(), task.getManager().getUsername());
-        }
+        this.assignee = new UserInfo(task.getAuthor().getUserId(), task.getAuthor().getUsername());
     }
 }

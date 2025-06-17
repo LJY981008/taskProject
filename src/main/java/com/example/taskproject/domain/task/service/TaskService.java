@@ -39,17 +39,17 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("작성자를 찾을수 없습니다"));
 
         User manager = null;
-        if(request.getManagerId() != null) {
-            manager = userRepository.findById(request.getManagerId())
+        if(request.getAssigneeId() != null) {
+            manager = userRepository.findById(request.getAssigneeId())
                     .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 담당자 입니다"));
         }
 
         Task task = new Task();
         task.setTitle(request.getTitle());
-        task.setContents(request.getContent());
-        task.setTaskPriority(request.getTaskPriority());
+        task.setContents(request.getDescription());
+        task.setTaskPriority(request.getPriority());
         task.setTaskStatus(request.getTaskStatus() != null ? request.getTaskStatus() : TaskStatus.TODO);
-        task.setDueDate(request.getDeadline());
+        task.setDueDate(request.getDueDate());
 
         if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
             task.setStartedAt(LocalDateTime.now());
