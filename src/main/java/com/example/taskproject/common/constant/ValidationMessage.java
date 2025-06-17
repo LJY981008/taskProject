@@ -7,6 +7,6 @@ public final class ValidationMessage {
     public static final String PASSWORD = "비밀번호 형식이 올바르지 않습니다.";
     public static final String USERNAME = "사용자 이름 형식이 올바르지 않습니다.";
     public static final String UPDATE = "수정할 정보가 없습니다.";
-    
+    public static final String COMMENT_CONTENTS = "내용을 입력해주세요.";
 
 } 
