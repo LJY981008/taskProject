@@ -6,6 +6,7 @@ import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
+import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.task.repository.TaskRepository;
@@ -29,11 +30,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final ActiveLogService activeLogService;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, TaskRepository taskRepository){
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, TaskRepository taskRepository, ActiveLogService activeLogService){
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
+        this.activeLogService = activeLogService;
     }
 
 
@@ -62,6 +65,7 @@ public class CommentService {
 
         Comment comment = new Comment(requestDto.getContents(), user, task);
         commentRepository.save(comment);
+        activeLogService.logActivity(user.getUserId(), "COMMENT_CREATED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, CreateCommentResponseDto.class);
     }
@@ -162,6 +166,7 @@ public class CommentService {
 
         comment = new Comment(requestDto.getContents(), user, task);
         commentRepository.save(comment);
+        activeLogService.logActivity(user.getUserId(), "COMMENT_UPDATED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, UpdateCommentResponseDto.class);
     }
@@ -192,6 +197,7 @@ public class CommentService {
 
         comment.delete();
         commentRepository.save(comment);
+        activeLogService.logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, DeleteCommentResponseDto.class);
     }
