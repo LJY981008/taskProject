@@ -9,7 +9,6 @@ import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
-import com.example.taskproject.domain.comment.service.CommentService;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +68,7 @@ public class CommentServiceTest {
         });
 
         // when
-        CreateCommentResponseDto responseDto = commentService.createComment(1L ,requestDto, userDto);
+        CommentResponseDto responseDto = commentService.createComment(1L ,requestDto, userDto);
 
         // then
         assertNotNull(responseDto);
@@ -164,11 +163,11 @@ public class CommentServiceTest {
         given(userRepository.findUserByEmailAndDeletedFalse(userDto.getEmail())).willReturn(Optional.of(user));
 
         // when
-        UpdateCommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
+        CommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
 
         // then
         assertNotNull(responseDto);
-        assertEquals("수정한 댓글", responseDto.getContents());
+        assertEquals("수정한 댓글", responseDto.getContent());
         verify(activeLogService).logActivity(user.getUserId(), "COMMENT_UPDATED", originComment.getCommentId());
     }
 
@@ -215,11 +214,13 @@ public class CommentServiceTest {
         given(commentRepository.findByCommentIdAndDeletedFalse(commentId)).willReturn(Optional.of(comment));
 
         // when
-        DeleteCommentResponseDto responseDto = commentService.deleteComment(taskId, commentId, userDto);
+        commentService.deleteComment(taskId, commentId, userDto);
 
         // then
-        assertNotNull(responseDto);
-        assertTrue(responseDto.isDeleted());
+        // 코드 수정으로 수정 필요
+//        assertNotNull(responseDto);
+//        assertTrue(responseDto.isDeleted());
+
         verify(activeLogService).logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
     }
 

@@ -1,15 +1,16 @@
 package com.example.taskproject.domain.comment.dto;
 
+import com.example.taskproject.common.dto.TaskResponseDto;
 import com.example.taskproject.common.dto.UserInfo;
 import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class FindCommentResponseDto {
-
+public class CommentResponseDto {
     private final Long id;
     private final String content;
     private final Long taskId;
@@ -18,7 +19,7 @@ public class FindCommentResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public FindCommentResponseDto(Comment comment){
+    public CommentResponseDto(Comment comment){
         this.id = comment.getCommentId();
         this.content = comment.getContents();
         this.taskId = comment.getTask().getTaskId();

@@ -49,7 +49,7 @@ public class CommentService {
      * @return CreateCommentResponseDto 생성된 댓글 응답 dto
      */
     @Transactional
-    public CreateCommentResponseDto createComment(
+    public CommentResponseDto createComment(
             Long taskId,
             CreateCommentRequestDto requestDto,
             AuthUserDto userDto){
@@ -59,15 +59,15 @@ public class CommentService {
         Task task = taskRepository.findTaskByTaskIdAndDeletedFalse(taskId).orElseThrow(() -> new CustomException(TASK_NOT_FOUND, TASK_NOT_FOUND.getMessage()));
 
         // 요청 dto에 댓글 내용이 입력되지 않을 경우 예외 처리
-        if(requestDto.getContents() == null || requestDto.getContents().isBlank()){
+        if(requestDto.getContent() == null || requestDto.getContent().isBlank()){
             throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
         }
 
-        Comment comment = new Comment(requestDto.getContents(), user, task);
+        Comment comment = new Comment(requestDto.getContent(), user, task);
         commentRepository.save(comment);
         activeLogService.logActivity(user.getUserId(), "COMMENT_CREATED", comment.getCommentId());
 
-        return CustomMapper.toDto(comment, CreateCommentResponseDto.class);
+        return CustomMapper.toDto(comment, CommentResponseDto.class);
     }
 
 
@@ -136,7 +136,7 @@ public class CommentService {
      * @return UpdateCommentResponseDto 수정된 댓글 응답 dto
      */
     @Transactional
-    public UpdateCommentResponseDto updateComment(
+    public CommentResponseDto updateComment(
             Long taskId,
             Long commentId,
             UpdateCommentRequestDto requestDto,
@@ -153,22 +153,15 @@ public class CommentService {
             throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage());
         }
 
-        // 요청 dto에 댓글 내용이 입력되지 않을 경우 예외 처리
-        if(requestDto.getContents() == null || requestDto.getContents().isBlank()){
-            throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
-        }
-
         // 기존 댓글 내용과 수정 댓글 내용이 동일할 경우 예외 처리
         if(comment.getContents().equals(requestDto.getContents())){
             throw new CustomException(COMMENT_IS_EQUAL, COMMENT_IS_EQUAL.getMessage());
         }
 
-
-        comment = new Comment(requestDto.getContents(), user, task);
-        commentRepository.save(comment);
+        comment.update(requestDto.getContents());
         activeLogService.logActivity(user.getUserId(), "COMMENT_UPDATED", comment.getCommentId());
 
-        return CustomMapper.toDto(comment, UpdateCommentResponseDto.class);
+        return CustomMapper.toDto(comment, CommentResponseDto.class);
     }
 
 
@@ -178,10 +171,9 @@ public class CommentService {
      * @param taskId 태스크 id
      * @param commentId 요청 dto
      * @param userDto 로그인된 사용자 dto
-     * @return DeleteCommentResponseDto 삭제된 댓글 응답 dto
      */
     @Transactional
-    public DeleteCommentResponseDto deleteComment(
+    public void deleteComment(
             Long taskId,
             Long commentId,
             AuthUserDto userDto){
@@ -198,7 +190,5 @@ public class CommentService {
         comment.delete();
         commentRepository.save(comment);
         activeLogService.logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
-
-        return CustomMapper.toDto(comment, DeleteCommentResponseDto.class);
     }
 }

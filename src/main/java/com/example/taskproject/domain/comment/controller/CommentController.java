@@ -42,7 +42,7 @@ public class CommentController {
             @RequestBody @Valid CreateCommentRequestDto requestDto,
             @AuthenticationPrincipal AuthUserDto userDto){
 
-        CreateCommentResponseDto responseDto = commentService.createComment(taskId, requestDto, userDto);
+        CommentResponseDto responseDto = commentService.createComment(taskId, requestDto, userDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CustomMapper.responseToMap(responseDto, true));
@@ -101,7 +101,7 @@ public class CommentController {
             @RequestBody @Valid UpdateCommentRequestDto requestDto,
             @AuthenticationPrincipal AuthUserDto userDto){
 
-        UpdateCommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
+        CommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(responseDto, true));
@@ -114,7 +114,6 @@ public class CommentController {
      * @param taskId    태스크 id
      * @param commentId 요청 dto
      * @param userDto   로그인된 사용자 dto
-     * @return DeleteCommentResponseDto 삭제된 댓글 응답 dto
      */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Map<String, Object>> deleteComment(
@@ -122,9 +121,9 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal AuthUserDto userDto){
 
-        DeleteCommentResponseDto responseDto = commentService.deleteComment(taskId, commentId, userDto);
+        commentService.deleteComment(taskId, commentId, userDto);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CustomMapper.responseToMap(responseDto, true));
+                .body(CustomMapper.responseToMap(null, true));
     }
 }
