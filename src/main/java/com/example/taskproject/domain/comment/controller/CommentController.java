@@ -71,7 +71,7 @@ public class CommentController {
      * @param requestDto 요청 dto
      * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
      */
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<Map<String, Object>> findByContents(
             @PathVariable Long taskId,
             @RequestBody FindCommentRequestDto requestDto){
