@@ -44,7 +44,8 @@ public class CommentController {
 
         CreateCommentResponseDto responseDto = commentService.createComment(taskId, requestDto, userDto);
 
-        return CustomMapper.responseEntity(responseDto, HttpStatus.CREATED, true);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CustomMapper.responseToMap(responseDto, true));
     }
 
 
@@ -60,7 +61,8 @@ public class CommentController {
 
         List<FindCommentResponseDto> responseDto = commentService.findAll(taskId);
 
-        return CustomMapper.responseEntity(responseDto, HttpStatus.OK, true);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(responseDto, true));
     }
 
 
@@ -78,7 +80,8 @@ public class CommentController {
 
         List<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto);
 
-        return CustomMapper.responseEntity(responseDto, HttpStatus.OK, true);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(responseDto, true));
     }
 
 
@@ -100,7 +103,8 @@ public class CommentController {
 
         UpdateCommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto, userDto);
 
-        return CustomMapper.responseEntity(responseDto, HttpStatus.OK, true);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(responseDto, true));
     }
 
 
@@ -120,6 +124,7 @@ public class CommentController {
 
         DeleteCommentResponseDto responseDto = commentService.deleteComment(taskId, commentId, userDto);
 
-        return CustomMapper.responseEntity(responseDto, HttpStatus.OK, true);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(responseDto, true));
     }
 }

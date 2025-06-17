@@ -3,6 +3,7 @@ package com.example.taskproject.common.exception;
 import com.example.taskproject.common.dto.CustomErrorResponseDto;
 import com.example.taskproject.common.enums.CustomErrorCode;
 import com.example.taskproject.common.util.CustomMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,7 @@ public class GlobalExceptionHandler {
 
         CustomErrorResponseDto errorResponseDto = new CustomErrorResponseDto(errorCode.name(), message);
 
-        return CustomMapper.responseEntity(errorResponseDto, errorCode.getHttpStatus(), false);
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomMapper.responseToMap(errorResponseDto, false));
     }
 }
