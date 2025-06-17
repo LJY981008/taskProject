@@ -59,11 +59,11 @@ public class CommentService {
         Task task = taskRepository.findTaskByTaskIdAndDeletedFalse(taskId).orElseThrow(() -> new CustomException(TASK_NOT_FOUND, TASK_NOT_FOUND.getMessage()));
 
         // 요청 dto에 댓글 내용이 입력되지 않을 경우 예외 처리
-        if(requestDto.getContents() == null || requestDto.getContents().isBlank()){
+        if(requestDto.getContent() == null || requestDto.getContent().isBlank()){
             throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
         }
 
-        Comment comment = new Comment(requestDto.getContents(), user, task);
+        Comment comment = new Comment(requestDto.getContent(), user, task);
         commentRepository.save(comment);
         activeLogService.logActivity(user.getUserId(), "COMMENT_CREATED", comment.getCommentId());
 
