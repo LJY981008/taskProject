@@ -19,7 +19,7 @@ import java.util.Map;
  * @author 이현하
  */
 @RestController
-@RequestMapping("/tasks/{taskId}/comments")
+@RequestMapping("/api/tasks/{taskId}/comments")
 public class CommentController {
     private final CommentService commentService;
 
