@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,6 +40,13 @@ public class UserController {
         UserResponse response = userService.getUser(userDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(response, true)); // 사용자 정보를 조회했습니다.
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<Map<String, Object>> getUsers() {
+        List<UserResponse> users = userService.getUsers();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(users, true));
     }
 
     @PostMapping("/auth/withdraw")

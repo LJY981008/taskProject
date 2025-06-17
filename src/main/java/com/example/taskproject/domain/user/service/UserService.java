@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -67,4 +69,8 @@ public class UserService {
         activeLogService.logActivity(user.getUserId(), "USER_DELETE", user.getUserId());
     }
 
+    public List<UserResponse> getUsers() {
+        List<User> user = userRepository.findAll();
+        return user.stream().map(it -> CustomMapper.toDto(user, UserResponse.class)).toList();
+    }
 }

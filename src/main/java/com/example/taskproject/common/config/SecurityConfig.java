@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -63,7 +64,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/", "/swagger-ui.html", "/v3/api-docs/").permitAll()
                         .requestMatchers("/api/auth/register","api/auth/login").permitAll()
                         .requestMatchers("/api/statistics/task-status","/api/statistics/team-progress", "/api/statistics/weekly-trend", "/api/statistics/over-due").hasRole(UserRole.USER.name())
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/users/**").hasRole(UserRole.USER.name())
+                        .requestMatchers("/api/tasks/**").hasRole(UserRole.USER.name())
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(configure -> configure
