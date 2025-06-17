@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.lang.reflect.Field;
@@ -28,6 +30,7 @@ import java.util.Optional;
 import static com.example.taskproject.common.enums.CustomErrorCode.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -105,23 +108,25 @@ public class CommentServiceTest {
         Long taskId = 1L;
         User user = new User(1L, "l@ex.com", "name");
         Task task = new Task(taskId, "title", user);
+        Pageable pageable = PageRequest.of(0, 10);
 
         Comment comment1 = new Comment("댓글1", user, task);
         Comment comment2 = new Comment("댓글2", user, task);
         List<Comment> commentList = List.of(comment1, comment2);
-        Pageable pageable = null;
+        Page<Comment> commentPage = new PageImpl<>(commentList, pageable, commentList.size());
 
-        given(commentRepository.findByTask_TaskIdAndDeletedFalse(taskId)).willReturn(commentList);
+        given(commentRepository.findByTask_TaskIdAndDeletedFalse(eq(taskId), any(Pageable.class)))
+                .willReturn(commentPage);
 
         // when
-        // 코드 변경으로 수정 필요
         PagedResponse<FindCommentResponseDto> responseDto = commentService.findAll(taskId, pageable);
 
         // then
-        // 코드 변경으로 수정 필요
-        //assertEquals(2, responseDto.size());
-        // assertEquals("댓글1", responseDto.get(0).getContents());
-        // assertEquals("댓글2", responseDto.get(1).getContents());
+        assertEquals(2, responseDto.getContent().size());
+        assertEquals("댓글1", responseDto.getContent().get(0).getContent());
+        assertEquals("댓글2", responseDto.getContent().get(1).getContent());
+        assertEquals(2, responseDto.getTotalElements());
+        assertEquals(1, responseDto.getTotalPages());
     }
 
 
@@ -133,23 +138,24 @@ public class CommentServiceTest {
         User user = new User(1L, "l@ex.com", "name");
         Task task = new Task(taskId, "title", user);
         FindCommentRequestDto requestDto = new FindCommentRequestDto("댓글");
+        Pageable pageable = PageRequest.of(0, 10);
 
         Comment comment1 = new Comment("댓글1", user, task);
         Comment comment2 = new Comment("덧글2", user, task);
         List<Comment> commentList = List.of(comment1, comment2);
+        Page<Comment> commentPage = new PageImpl<>(commentList, pageable, commentList.size());
 
-        given(commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(taskId, "댓글"))
-                .willReturn(commentList);
+        given(commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(eq(taskId), eq(requestDto.getContent()), any(Pageable.class)))
+                .willReturn(commentPage);
 
         // when
-        // 코드 변경으로 수정 필요
-//        List<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto);
-//
-//        // then
-        // 코드 변경으로 수정 필요
-//        assertEquals(2, responseDto.size());
-//        assertTrue(responseDto.get(0).getContents().contains("댓글"));
-//        assertFalse(responseDto.get(1).getContents().contains("댓글"));
+        PagedResponse<FindCommentResponseDto> responseDto =
+                commentService.findByContents(taskId, requestDto, pageable);
+
+        // then
+        assertEquals(2, responseDto.getContent().size());
+        assertTrue(responseDto.getContent().get(0).getContent().contains("댓글"));
+        assertFalse(responseDto.getContent().get(1).getContent().contains("댓글"));
     }
 
 
