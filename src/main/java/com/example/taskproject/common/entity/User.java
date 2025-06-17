@@ -45,4 +45,11 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "author")
     private List<Comment> comments;
+
+
+    public User(Long userId, String email, String userName){
+        this.userId = userId;
+        this.email = email;
+        this.username = userName;
+    }
 }
