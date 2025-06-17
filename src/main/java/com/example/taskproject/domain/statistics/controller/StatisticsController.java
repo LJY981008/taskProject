@@ -2,16 +2,14 @@ package com.example.taskproject.domain.statistics.controller;
 
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.util.CustomMapper;
-import com.example.taskproject.domain.statistics.dto.WeekFinishTaskDto;
+import com.example.taskproject.domain.statistics.dto.*;
 import com.example.taskproject.domain.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -29,7 +27,9 @@ public class StatisticsController {
     @GetMapping("/task-status")
     public ResponseEntity<Map<String, Object>> getTaskStatusStatistics(
     ) {
-        return CustomMapper.responseEntity(statisticsService.getTaskStatusCounts(), HttpStatus.OK, true);
+        GetTaskStatusResponse taskStatusCounts = statisticsService.getTaskStatusCounts();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(taskStatusCounts, true));
     }
 
     /**
@@ -42,7 +42,9 @@ public class StatisticsController {
     public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
             @AuthenticationPrincipal AuthUserDto user
     ) {
-        return CustomMapper.responseEntity(statisticsService.getTeamFinishTaskCounts(user.getEmail()), HttpStatus.OK, true);
+        TeamTaskStatusCount teamFinishTaskCounts = statisticsService.getTeamFinishTaskCounts(user.getEmail());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(teamFinishTaskCounts, true));
     }
 
     /**
@@ -57,7 +59,9 @@ public class StatisticsController {
     public ResponseEntity<Map<String, Object>> getWeekFinishTaskStatistics(
             @RequestBody WeekFinishTaskDto from
     ) {
-        return CustomMapper.responseEntity(statisticsService.getWeekFinishTaskCounts(from.getDate()), HttpStatus.OK, true);
+        WeekFinishTaskCount weekFinishTaskCounts = statisticsService.getWeekFinishTaskCounts(from.getDate());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(weekFinishTaskCounts, true));
     }
 
     /**
@@ -67,6 +71,8 @@ public class StatisticsController {
      */
     @GetMapping("/over-due")
     public ResponseEntity<Map<String, Object>> getOverdueTaskStatistics() {
-        return CustomMapper.responseEntity(statisticsService.getOverdueTaskCounts(),HttpStatus.OK, true);
+        OverDueTaskCount overdueTaskCounts = statisticsService.getOverdueTaskCounts();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(overdueTaskCounts, true));
     }
 }

@@ -6,6 +6,7 @@ import com.example.taskproject.common.dto.TaskCreateRequestDto;
 import com.example.taskproject.common.dto.TaskResponseDto;
 import com.example.taskproject.common.dto.TaskUpdateRequestDto;
 import com.example.taskproject.common.entity.Task;
+import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.task.service.TaskService;
 import jakarta.validation.Valid;
@@ -18,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/tasks")
@@ -27,45 +30,50 @@ public class TaskController {
 
     // 태스크 생성
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(
+    public ResponseEntity<Map<String, Object>> createTask(
             @RequestBody @Valid TaskCreateRequestDto request,
             @AuthenticationPrincipal AuthUserDto userDto) {
         TaskResponseDto response = taskService.createTask(request, userDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CustomMapper.responseToMap(response, true));
     }
 
     // 태스크 수정
     @PutMapping("/{taskId}")
-    public ResponseEntity<TaskResponseDto> updateTask(
+    public ResponseEntity<Map<String, Object>> updateTask(
             @PathVariable Long taskId,
             @RequestBody TaskUpdateRequestDto request,
             @AuthenticationPrincipal AuthUserDto userDto){
         TaskResponseDto response = taskService.updateTask(taskId, request, userDto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(response, true));
     }
 
     // 태스크 단건 조회
     @GetMapping("/{taskId}")
-    public ResponseEntity<TaskResponseDto> getTask(@PathVariable Long taskId) {
+    public ResponseEntity<Map<String,Object>> getTask(@PathVariable Long taskId) {
         TaskResponseDto response = taskService.getTask(taskId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(response, true));
     }
 
     // 태스크 전체 조회
     @GetMapping
-    public ResponseEntity<Page<TaskResponseDto>> getAllTasks(Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> getAllTasks(Pageable pageable) {
         Page<TaskResponseDto> tasks = taskService.getAllTasks(pageable);
-        return ResponseEntity.ok(tasks);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(tasks, true));
     }
 
     // 태스크 삭제(soft delete)
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<TaskResponseDto> deleteTask(
+    public ResponseEntity<Map<String,Object>> deleteTask(
             @PathVariable Long taskId,
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         taskService.deleteTask(taskId, userDto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(null, true));
     }
 
 }
