@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +71,9 @@ public class UserService {
     }
 
     public List<UserResponse> getUsers() {
-        List<User> user = userRepository.findAll();
-        return user.stream().map(it -> CustomMapper.toDto(user, UserResponse.class)).toList();
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> CustomMapper.toDto(user, UserResponse.class))
+                .collect(Collectors.toList());
     }
 }

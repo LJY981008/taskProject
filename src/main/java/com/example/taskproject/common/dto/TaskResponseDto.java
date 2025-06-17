@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TaskResponseDto {
 
-    private Long taskId;
+    private Long id;
 
     private String title;
 
@@ -56,7 +56,7 @@ public class TaskResponseDto {
     }
 
     public TaskResponseDto(Task task) {
-        this.taskId = task.getTaskId();
+        this.id = task.getTaskId();
         this.title = task.getTitle();
         this.contents = task.getContents();
         this.taskPriority = task.getTaskPriority();
