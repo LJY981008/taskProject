@@ -112,7 +112,7 @@ public class TaskService {
     // 태스크 전체 조회
     @Transactional(readOnly = true)
     public Page<TaskResponseDto> getAllTasks(Pageable pageable){
-        Page<Task> tasks = taskRepository.findAll(pageable);
+        Page<Task> tasks = taskRepository.findByDeletedFalse(pageable);
 
         return tasks.map(TaskResponseDto::new);
     }
