@@ -159,9 +159,7 @@ public class CommentService {
             throw new CustomException(COMMENT_IS_EQUAL, COMMENT_IS_EQUAL.getMessage());
         }
 
-
-        comment = new Comment(requestDto.getContents(), user, task);
-        commentRepository.save(comment);
+        comment.update(requestDto.getContents());
 
         return CustomMapper.toDto(comment, UpdateCommentResponseDto.class);
     }
