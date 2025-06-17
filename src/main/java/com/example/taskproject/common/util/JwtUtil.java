@@ -70,7 +70,7 @@ public class JwtUtil {
         if (!tokenValue.startsWith(Const.tokenPrefix)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 토큰 형식입니다.");
         }
-        return tokenValue.substring(Const.tokenPrefix.length());
+        return tokenValue.replace(Const.tokenPrefix, "");
     }
 
     public Claims extractClaims(String token) {
