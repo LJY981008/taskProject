@@ -8,6 +8,7 @@ import com.example.taskproject.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -67,7 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/tasks").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/dashboard/stats","/api/dashboard/my-tasks", "/api/statistics/weekly-trend", "/api/statistics/over-due").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/users/**").hasRole(UserRole.USER.name())
-                        .requestMatchers("/api/tasks").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/tasks").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/tasks/my").hasRole(UserRole.USER.name())
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)

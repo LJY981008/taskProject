@@ -2,6 +2,7 @@ package com.example.taskproject.common.dto;
 
 
 import com.example.taskproject.common.entity.Task;
+import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.TaskPriority;
 import com.example.taskproject.common.enums.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -44,15 +45,15 @@ public class TaskResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    private boolean deleted;
-
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserInfo {
-        private Long userId;
+        private Long id;
+        private String username;
         private String name;
+        private String email;
     }
 
     public TaskResponseDto(Task task) {
@@ -65,7 +66,8 @@ public class TaskResponseDto {
         this.startedAt = task.getStartedAt();
         this.createdAt = task.getCreatedAt();
         this.updatedAt = task.getModifiedAt();
-        this.deleted = task.isDeleted();
-        this.assignee = new UserInfo(task.getAuthor().getUserId(), task.getAuthor().getUsername());
+        User author = task.getAuthor();
+        this.assigneeId = author.getUserId();
+        this.assignee = new UserInfo(author.getUserId(), author.getUsername(), author.getName(), author.getEmail());
     }
 }

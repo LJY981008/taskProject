@@ -51,11 +51,13 @@ public class TaskService {
         task.setTaskStatus(request.getTaskStatus() != null ? request.getTaskStatus() : TaskStatus.TODO);
         task.setDueDate(request.getDueDate());
 
-        if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
-            task.setStartedAt(LocalDateTime.now());
-        } else {
-            task.setStartedAt(null);
-        }
+        task.setStartedAt(LocalDateTime.now());
+
+//        if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
+//            task.setStartedAt(LocalDateTime.now());
+//        } else {
+//            task.setStartedAt(null);
+//        }
 
         task.setAuthor(author);
         task.setManager(manager);
