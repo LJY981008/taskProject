@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
@@ -60,6 +62,9 @@ public class ActiveLogServiceTest {
         request.setRemoteAddr("192.168.0.1");
         request.setMethod("POST");
         request.setRequestURI("/test/uri");
+
+        ServletRequestAttributes attributes = new ServletRequestAttributes(request);
+        RequestContextHolder.setRequestAttributes(attributes);
 
         //when
         activeLogService.logActivity(userId, activityType, targetId);
