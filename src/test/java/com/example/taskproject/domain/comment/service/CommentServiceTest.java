@@ -6,6 +6,7 @@ import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.UserRole;
 import com.example.taskproject.common.exception.CustomException;
+import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.comment.service.CommentService;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 /**
  * 댓글 기능 테스트코드
@@ -40,6 +43,8 @@ public class CommentServiceTest {
     private TaskRepository taskRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ActiveLogService activeLogService;
     @InjectMocks
     private CommentService commentService;
 
@@ -51,17 +56,24 @@ public class CommentServiceTest {
         AuthUserDto userDto = new AuthUserDto(1L, "l@ex.com", UserRole.USER);
         User user = new User(1L, "l@ex.com", "name");
         Task task = new Task(1L, "title", user);
-        Comment comment = new Comment("contents", user, task);
 
         given(userRepository.findUserByEmailAndDeletedFalse("l@ex.com")).willReturn(Optional.of(user));
         given(taskRepository.findTaskByTaskIdAndDeletedFalse(1L)).willReturn(Optional.of(task));
-        given(commentRepository.save(any())).willReturn(comment);
+        given(commentRepository.save(any())).willAnswer(invocation -> {
+            Comment comment = invocation.getArgument(0);
+
+            Field field = Comment.class.getDeclaredField("commentId");
+            field.setAccessible(true);
+            field.set(comment, 1L);
+            return comment;
+        });
 
         // when
         CreateCommentResponseDto responseDto = commentService.createComment(1L ,requestDto, userDto);
 
         // then
         assertNotNull(responseDto);
+        verify(activeLogService).logActivity(user.getUserId(), "COMMENT_CREATED", task.getTaskId());
     }
 
     @Test
@@ -157,6 +169,7 @@ public class CommentServiceTest {
         // then
         assertNotNull(responseDto);
         assertEquals("수정한 댓글", responseDto.getContents());
+        verify(activeLogService).logActivity(user.getUserId(), "COMMENT_UPDATED", originComment.getCommentId());
     }
 
 
@@ -207,6 +220,7 @@ public class CommentServiceTest {
         // then
         assertNotNull(responseDto);
         assertTrue(responseDto.isDeleted());
+        verify(activeLogService).logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
     }
 
 

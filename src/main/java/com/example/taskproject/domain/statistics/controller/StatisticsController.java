@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/statistics")
+@RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 public class StatisticsController {
 
@@ -24,7 +24,7 @@ public class StatisticsController {
      *
      * @return 할 일, 진행 중, 완료 상태의 작업 개수를 포함한 응답
      */
-    @GetMapping("/task-status")
+    @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getTaskStatusStatistics(
     ) {
         GetTaskStatusResponse taskStatusCounts = statisticsService.getTaskStatusCounts();
@@ -38,7 +38,7 @@ public class StatisticsController {
      * @param user 현재 인증된 사용자
      * @return 팀의 완료된 작업 개수를 포함한 응답
      */
-    @GetMapping("/team-progress")
+    @GetMapping("/my-tasks")
     public ResponseEntity<Map<String, Object>> getTeamProgressStatistics(
             @AuthenticationPrincipal AuthUserDto user
     ) {

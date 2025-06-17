@@ -52,8 +52,7 @@ public class JwtUtil {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + Const.tokenValidityInMilliseconds);
 
-        return Const.tokenPrefix +
-                Jwts.builder()
+        return Jwts.builder()
                         .setSubject(String.valueOf(userId))
                         .claim("email", email)
                         .claim("userRole", userRole)

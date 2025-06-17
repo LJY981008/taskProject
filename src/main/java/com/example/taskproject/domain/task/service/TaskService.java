@@ -9,6 +9,7 @@ import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.exception.CustomException;
+import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,7 +29,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-
+    private final ActiveLogService activeLogService;
 
 
     // 태스크 생성
@@ -38,28 +39,33 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("작성자를 찾을수 없습니다"));
 
         User manager = null;
-        if(request.getManagerId() != null) {
-            manager = userRepository.findById(request.getManagerId())
+        if(request.getAssigneeId() != null) {
+            manager = userRepository.findById(request.getAssigneeId())
                     .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 담당자 입니다"));
         }
 
         Task task = new Task();
         task.setTitle(request.getTitle());
-        task.setContents(request.getContent());
-        task.setTaskPriority(request.getTaskPriority());
+        task.setContents(request.getDescription());
+        task.setTaskPriority(request.getPriority());
         task.setTaskStatus(request.getTaskStatus() != null ? request.getTaskStatus() : TaskStatus.TODO);
-        task.setDeadline(request.getDeadline());
+        task.setDueDate(request.getDueDate());
 
-        if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
-            task.setStartedAt(LocalDateTime.now());
-        } else {
-            task.setStartedAt(null);
-        }
+        task.setStartedAt(LocalDateTime.now());
+
+//        if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
+//            task.setStartedAt(LocalDateTime.now());
+//        } else {
+//            task.setStartedAt(null);
+//        }
 
         task.setAuthor(author);
         task.setManager(manager);
 
         Task saved = taskRepository.save(task);
+
+        activeLogService.logActivity(userDto.getId(), "TASK_CREATED", task.getTaskId());
+
         return new TaskResponseDto(saved);
 
     }
@@ -84,7 +90,7 @@ public class TaskService {
             task.setTaskPriority(request.getTaskPriority());
         }
         if(request.getDeadline() != null) {
-            task.setDeadline(request.getDeadline());
+            task.setDueDate(request.getDeadline());
         }
         if(request.getManagerId() != null) {
             User manager = userRepository.findById(request.getManagerId())
@@ -98,6 +104,8 @@ public class TaskService {
             }
         }
         Task saved = taskRepository.save(task);
+        activeLogService.logActivity(userDto.getId(), "TASK_UPDATED", task.getTaskId());
+
         return new TaskResponseDto(saved);
     }
 
@@ -105,6 +113,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public Page<TaskResponseDto> getAllTasks(Pageable pageable){
         Page<Task> tasks = taskRepository.findAll(pageable);
+
         return tasks.map(TaskResponseDto::new);
     }
 
@@ -127,6 +136,8 @@ public class TaskService {
         }
         task.setDeleted(true);
         task.setDeletedAt(LocalDateTime.now());
+        activeLogService.logActivity(userDto.getId(), "TASK_DELETED", task.getTaskId());
+
         taskRepository.save(task);
     }
 

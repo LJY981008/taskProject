@@ -15,22 +15,27 @@ import java.time.LocalDateTime;
 public class Task extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long taskId;
 
     private String title;
 
+    @Column(name = "description")
     private String contents;
 
+    @Column(name = "priority")
     private TaskPriority taskPriority;
 
+    @Column(name = "status")
     private TaskStatus taskStatus;
 
-    private LocalDateTime deadline;
+    @Column(name = "dueDate")
+    private LocalDateTime dueDate = LocalDateTime.now();
     //추가
-    private LocalDateTime startedAt;
+    private LocalDateTime startedAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "userId")
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)

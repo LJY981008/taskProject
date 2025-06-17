@@ -15,17 +15,17 @@ import static com.example.taskproject.common.entity.QTask.task;
 
 @Repository
 @RequiredArgsConstructor
-public class StatisticsRepositoryImpl implements StatisticsRepository{
+public class StatisticsRepositoryImpl implements StatisticsRepository {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
     public List<StatusCount> findStatusCount() {
         return queryFactory.select(
-                new QStatusCount(
-                        task.taskStatus,
-                        task.count()
-                )).from(task)
+                        new QStatusCount(
+                                task.taskStatus,
+                                task.count()
+                        )).from(task)
                 .where(task.deleted.isFalse())
                 .groupBy(task.taskStatus)
                 .fetch();
@@ -46,11 +46,11 @@ public class StatisticsRepositoryImpl implements StatisticsRepository{
 
 
         return queryFactory.select(
-                new QTeamTaskStatusCount(
-                        task.count(),
-                        teamFinishTaskCount,
-                        myFinishTaskCount
-                ))
+                        new QTeamTaskStatusCount(
+                                task.count(),
+                                teamFinishTaskCount,
+                                myFinishTaskCount
+                        ))
                 .from(task)
                 .where(task.deleted.isFalse())
                 .fetchOne();
@@ -86,7 +86,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository{
                 .when(
                         task.taskStatus.eq(TaskStatus.TODO)
                         .or(task.taskStatus.eq(TaskStatus.IN_PROGRESS))
-                                .and(task.deadline.lt(LocalDateTime.now()))
+                                .and(task.dueDate.lt(LocalDateTime.now()))
                 )
                 .then(1L)
                 .otherwise(0L).sum();

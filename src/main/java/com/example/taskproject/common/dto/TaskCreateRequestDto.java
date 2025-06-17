@@ -22,18 +22,18 @@ public class TaskCreateRequestDto {
     @NotBlank(message = "title을 입력해주세요")
     private String title;
 
-    private String content;
+    private String description;
 
     @NotNull(message = "taskpriority를 입력해주세요")
-    private TaskPriority taskPriority;
+    private TaskPriority priority;
 
-    private Long managerId;
+    private Long assigneeId;
 
     @FutureOrPresent(message = "deadline은 현재 또는 미래여야 합니다.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime deadline;
+    private LocalDateTime dueDate;
 
-    private TaskStatus taskStatus = TaskStatus.TODO;
+    private TaskStatus taskStatus;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startedAt;

@@ -7,6 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 @RequiredArgsConstructor
@@ -22,10 +26,13 @@ public class ActiveLogService {
      * @param userId 사용자(주체) userID값
      * @param activityType 활동 내역(LOGIN, TASK_UPDATE 등)
      * @param targetId 대상 ID값
-     * @param request HttpServletRequest, Ip, Method, URL값 저장 위해 사용
+     * request HttpServletRequest, Ip, Method, URL값 저장 위해 사용
      * use example : activeLogService.logActivity(1L, "LOGIN", 2L, request);
      */
-    public void logActivity(Long userId, String activityType, Long targetId, HttpServletRequest request){
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logActivity(Long userId, String activityType, Long targetId){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
         ActiveLog log = new ActiveLog();
         log.setUserId(userId);
         log.setActivityType(activityType);
