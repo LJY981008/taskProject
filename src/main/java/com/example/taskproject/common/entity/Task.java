@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class Task extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long taskId;
 
     private String title;
