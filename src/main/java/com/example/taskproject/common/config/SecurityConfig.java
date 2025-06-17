@@ -1,5 +1,6 @@
 package com.example.taskproject.common.config;
 
+import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.UserRole;
 import com.example.taskproject.common.exception.JwtAccessDeniedHandler;
 import com.example.taskproject.common.exception.JwtAuthenticationEntryPoint;
@@ -63,14 +64,15 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/", "/swagger-ui.html", "/v3/api-docs/").permitAll()
-                        .requestMatchers("/api/auth/register","api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/register", "api/auth/login").permitAll()
                         .requestMatchers("/api/tasks/my").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/tasks").hasRole(UserRole.USER.name())
-                        .requestMatchers("/api/dashboard/stats","/api/dashboard/my-tasks", "/api/statistics/weekly-trend", "/api/statistics/over-due").hasRole(UserRole.USER.name())
+                        .requestMatchers("/api/dashboard/stats", "/api/dashboard/my-tasks", "/api/statistics/weekly-trend", "/api/statistics/over-due").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/users/**").hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.POST, "/api/tasks").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/tasks/my").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/tasks/**").hasRole(UserRole.USER.name())
+                        .requestMatchers("/api/auth/**").hasRole(UserRole.USER.name())
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(configure -> configure
