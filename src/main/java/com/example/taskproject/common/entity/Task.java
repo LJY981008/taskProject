@@ -30,9 +30,9 @@ public class Task extends BaseEntity {
     private TaskStatus taskStatus;
 
     @Column(name = "dueDate")
-    private LocalDateTime deadline;
+    private LocalDateTime dueDate = LocalDateTime.now();
     //추가
-    private LocalDateTime startedAt;
+    private LocalDateTime startedAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")

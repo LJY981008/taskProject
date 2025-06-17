@@ -58,10 +58,10 @@ public class TaskServiceTest {
         // given
         TaskCreateRequestDto request = new TaskCreateRequestDto();
         request.setTitle("태스크서비스 테스트");
-        request.setTaskPriority(TaskPriority.HIGH);
+        request.setPriority(TaskPriority.HIGH);
         request.setTaskStatus(TaskStatus.TODO);
-        request.setDeadline(LocalDateTime.now().plusDays(1));
-        request.setManagerId(null);
+        request.setDueDate(LocalDateTime.now().plusDays(1));
+        request.setAssigneeId(null);
 
         User author = mock(User.class);
         ReflectionTestUtils.setField(author, "userId", 1L);
@@ -75,7 +75,7 @@ public class TaskServiceTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo("태스크서비스 테스트");
-        assertThat(response.getTaskPriority()).isEqualTo(TaskPriority.HIGH);
+        assertThat(response.getPriority()).isEqualTo(TaskPriority.HIGH);
         verify(taskRepository, times(1)).save(any(Task.class));
         verify(activeLogService, times(1)).logActivity(1L, "TASK_CREATED", null);
     }
@@ -107,7 +107,7 @@ public class TaskServiceTest {
 
         // then
         assertThat(response.getTitle()).isEqualTo("업데이트 테스트");
-        assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
+        assertThat(response.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
         verify(activeLogService, times(1)).logActivity(author.getUserId(), "TASK_UPDATED", taskId);
     }
 
