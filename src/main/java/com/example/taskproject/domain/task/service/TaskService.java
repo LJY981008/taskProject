@@ -49,7 +49,7 @@ public class TaskService {
         task.setContents(request.getDescription());
         task.setTaskPriority(request.getPriority());
         task.setTaskStatus(request.getTaskStatus() != null ? request.getTaskStatus() : TaskStatus.TODO);
-        task.setDueDate(request.getDueDate());
+        task.setDueDate(request.getDueDate().atStartOfDay());
 
         task.setStartedAt(LocalDateTime.now());
 

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -30,8 +31,7 @@ public class TaskCreateRequestDto {
     private Long assigneeId;
 
     @FutureOrPresent(message = "deadline은 현재 또는 미래여야 합니다.")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
 
     private TaskStatus taskStatus;
 
