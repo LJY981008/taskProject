@@ -1,6 +1,7 @@
 package com.example.taskproject.domain.comment.service;
 
 import com.example.taskproject.common.dto.AuthUserDto;
+import com.example.taskproject.common.dto.PagedResponse;
 import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
@@ -11,11 +12,10 @@ import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.taskproject.common.enums.CustomErrorCode.*;
 
@@ -75,22 +75,14 @@ public class CommentService {
      * 댓글 전체 조회
      *
      * @param taskId 태스크 id
-     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     * @return PagedResponse<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
      */
     @Transactional
-    public List<FindCommentResponseDto> findAll(Long taskId){
+    public PagedResponse<FindCommentResponseDto> findAll(Long taskId, Pageable pageable){
+        Page<Comment> comments = commentRepository.findByTask_TaskIdAndDeletedFalse(taskId, pageable);
 
-        List<Comment> commentList = commentRepository.findByTask_TaskIdAndDeletedFalse(taskId);
-
-        if (commentList == null || commentList.isEmpty()) {
-            throw new CustomException(COMMENT_NOT_FOUND);
-        }
-
-
-        return commentList
-                .stream()
-                .map(comment -> CustomMapper.toDto(comment, FindCommentResponseDto.class))
-                .collect(Collectors.toList());
+        Page<FindCommentResponseDto> dtoPage = comments.map(FindCommentResponseDto::new);
+        return new PagedResponse<>(dtoPage);
     }
 
 
@@ -99,30 +91,24 @@ public class CommentService {
      *
      * @param taskId 태스크 id
      * @param requestDto 요청 dto
-     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     * @return PagedResponse<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
      */
     @Transactional
-    public List<FindCommentResponseDto> findByContents(
+    public PagedResponse<FindCommentResponseDto> findByContents(
             Long taskId,
-            FindCommentRequestDto requestDto){
+            FindCommentRequestDto requestDto,
+            Pageable pageable){
 
-        if(requestDto.getContents() == null || requestDto.getContents().isBlank()){
+        if(requestDto.getContent() == null || requestDto.getContent().isBlank()){
             throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
         }
 
-        List<Comment> commentList =
+        Page<Comment> comments =
                 commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(
-                        taskId, requestDto.getContents());
+                        taskId, requestDto.getContent(), pageable);
 
-        if (commentList == null || commentList.isEmpty()) {
-            throw new CustomException(COMMENT_NOT_FOUND);
-        }
-
-
-        return commentList
-                .stream()
-                .map(comment -> CustomMapper.toDto(comment, FindCommentResponseDto.class))
-                .collect(Collectors.toList());
+        Page<FindCommentResponseDto> dtoPage = comments.map(FindCommentResponseDto::new);
+        return new PagedResponse<>(dtoPage);
     }
 
 
@@ -154,11 +140,11 @@ public class CommentService {
         }
 
         // 기존 댓글 내용과 수정 댓글 내용이 동일할 경우 예외 처리
-        if(comment.getContents().equals(requestDto.getContents())){
+        if(comment.getContents().equals(requestDto.getContent())){
             throw new CustomException(COMMENT_IS_EQUAL, COMMENT_IS_EQUAL.getMessage());
         }
 
-        comment.update(requestDto.getContents());
+        comment.update(requestDto.getContent());
         activeLogService.logActivity(user.getUserId(), "COMMENT_UPDATED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, CommentResponseDto.class);

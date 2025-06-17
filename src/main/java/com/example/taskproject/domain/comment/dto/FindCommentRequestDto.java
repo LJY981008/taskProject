@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class FindCommentRequestDto {
-    private final String contents;
+    private final String content;
 
-    public FindCommentRequestDto(String contents){
-        this.contents = contents;
+    public FindCommentRequestDto(String content){
+        this.content = content;
     }
 }

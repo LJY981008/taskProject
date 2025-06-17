@@ -1,16 +1,17 @@
 package com.example.taskproject.domain.comment.controller;
 
 import com.example.taskproject.common.dto.AuthUserDto;
+import com.example.taskproject.common.dto.PagedResponse;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.service.CommentService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,9 +58,10 @@ public class CommentController {
      */
     @GetMapping
     public ResponseEntity<Map<String, Object>> findAllComment(
-            @PathVariable Long taskId){
+            @PathVariable Long taskId,
+            Pageable pageable){
 
-        List<FindCommentResponseDto> responseDto = commentService.findAll(taskId);
+        PagedResponse<FindCommentResponseDto> responseDto = commentService.findAll(taskId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(responseDto, true));
@@ -76,9 +78,10 @@ public class CommentController {
     @GetMapping("/search")
     public ResponseEntity<Map<String, Object>> findByContents(
             @PathVariable Long taskId,
-            @RequestBody FindCommentRequestDto requestDto){
+            @RequestBody FindCommentRequestDto requestDto,
+            Pageable pageable){
 
-        List<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto);
+        PagedResponse<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(responseDto, true));
