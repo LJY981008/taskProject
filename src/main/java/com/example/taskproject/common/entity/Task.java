@@ -19,18 +19,22 @@ public class Task extends BaseEntity {
 
     private String title;
 
+    @Column(name = "description")
     private String contents;
 
+    @Column(name = "priority")
     private TaskPriority taskPriority;
 
+    @Column(name = "status")
     private TaskStatus taskStatus;
 
+    @Column(name = "dueDate")
     private LocalDateTime deadline;
     //추가
     private LocalDateTime startedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "userId")
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)

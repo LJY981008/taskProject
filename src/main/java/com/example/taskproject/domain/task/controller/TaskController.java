@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/dashbod")
 public class TaskController {
 
     private final TaskService taskService;

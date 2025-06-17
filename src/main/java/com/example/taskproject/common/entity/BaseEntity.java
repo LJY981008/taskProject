@@ -22,7 +22,7 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "updatedAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime modifiedAt;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
