@@ -83,23 +83,23 @@ public class TaskService {
         if(request.getTitle() != null && !request.getTitle().isBlank()) {
             task.setTitle(request.getTitle());
         }
-        if(request.getContent() != null) {
-            task.setContents(request.getContent());
+        if(request.getDescription() != null) {
+            task.setContents(request.getDescription());
         }
-        if(request.getTaskPriority() != null) {
-            task.setTaskPriority(request.getTaskPriority());
+        if(request.getPriority() != null) {
+            task.setTaskPriority(request.getPriority());
         }
-        if(request.getDeadline() != null) {
-            task.setDueDate(request.getDeadline());
+        if(request.getDueDate() != null) {
+            task.setDueDate(request.getDueDate().atStartOfDay());
         }
-        if(request.getManagerId() != null) {
-            User manager = userRepository.findById(request.getManagerId())
+        if(request.getAssigneeId() != null) {
+            User manager = userRepository.findById(request.getAssigneeId())
                     .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 담당자 입니다"));
             task.setManager(manager);
         }
-        if(request.getTaskStatus() != null && !request.getTaskStatus().equals(task.getTaskStatus())) {
-            task.setTaskStatus(request.getTaskStatus());
-            if (request.getTaskStatus() == TaskStatus.IN_PROGRESS && task.getStartedAt() == null) {
+        if(request.getStatus() != null && !request.getStatus().equals(task.getTaskStatus())) {
+            task.setTaskStatus(request.getStatus());
+            if (request.getStatus() == TaskStatus.IN_PROGRESS && task.getStartedAt() == null) {
                 task.setStartedAt(LocalDateTime.now());
             }
         }
@@ -112,7 +112,7 @@ public class TaskService {
     // 태스크 전체 조회
     @Transactional(readOnly = true)
     public Page<TaskResponseDto> getAllTasks(Pageable pageable){
-        Page<Task> tasks = taskRepository.findAll(pageable);
+        Page<Task> tasks = taskRepository.findByDeletedFalse(pageable);
 
         return tasks.map(TaskResponseDto::new);
     }

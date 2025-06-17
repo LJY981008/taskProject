@@ -45,17 +45,6 @@ public class TaskResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UserInfo {
-        private Long id;
-        private String username;
-        private String name;
-        private String email;
-    }
-
     public TaskResponseDto(Task task) {
         this.id = task.getTaskId();
         this.title = task.getTitle();

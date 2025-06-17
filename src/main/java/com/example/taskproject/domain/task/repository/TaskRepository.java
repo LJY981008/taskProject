@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long>, StatisticsRepository {
     Optional<Task> findTaskByTaskIdAndDeletedFalse(Long id);
     Page<Task> findByDeletedFalse(Pageable pageable);
+
 }
