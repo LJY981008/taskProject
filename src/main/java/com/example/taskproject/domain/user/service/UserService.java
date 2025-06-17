@@ -37,7 +37,7 @@ public class UserService {
                 request.getUsername(),
                 request.getName()
         ));
-        activeLogService.logActivity(user.getUserId(), "REGISTER", user.getUserId());
+        activeLogService.logActivity(user.getUserId(), "USER_REGISTER", user.getUserId());
         return CustomMapper.toDto(user, UserResponse.class);
     }
 
@@ -47,14 +47,13 @@ public class UserService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.LOGIN_FAILED);
         }
-        activeLogService.logActivity(user.getUserId(), "LOGIN", user.getUserId());
+        activeLogService.logActivity(user.getUserId(), "USER_LOGGED_IN", user.getUserId());
 
         return new LoginResponse(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()));
     }
 
     public UserResponse getUser(AuthUserDto userDto) {
         User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
-        activeLogService.logActivity(user.getUserId(), "USER_GET", user.getUserId());
         return CustomMapper.toDto(user, UserResponse.class);
     }
 

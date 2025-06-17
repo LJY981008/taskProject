@@ -9,6 +9,7 @@ import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.exception.CustomException;
+import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,7 +29,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-
+    private final ActiveLogService activeLogService;
 
 
     // 태스크 생성
@@ -60,6 +61,9 @@ public class TaskService {
         task.setManager(manager);
 
         Task saved = taskRepository.save(task);
+
+        activeLogService.logActivity(userDto.getId(), "TASK_CREATED", task.getTaskId());
+
         return new TaskResponseDto(saved);
 
     }
@@ -98,6 +102,8 @@ public class TaskService {
             }
         }
         Task saved = taskRepository.save(task);
+        activeLogService.logActivity(userDto.getId(), "TASK_UPDATED", task.getTaskId());
+
         return new TaskResponseDto(saved);
     }
 
@@ -105,6 +111,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public Page<TaskResponseDto> getAllTasks(Pageable pageable){
         Page<Task> tasks = taskRepository.findAll(pageable);
+
         return tasks.map(TaskResponseDto::new);
     }
 
@@ -127,6 +134,8 @@ public class TaskService {
         }
         task.setDeleted(true);
         task.setDeletedAt(LocalDateTime.now());
+        activeLogService.logActivity(userDto.getId(), "TASK_DELETED", task.getTaskId());
+
         taskRepository.save(task);
     }
 
