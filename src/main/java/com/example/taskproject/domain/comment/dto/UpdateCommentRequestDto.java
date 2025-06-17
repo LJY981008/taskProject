@@ -8,9 +8,9 @@ import static com.example.taskproject.common.constant.ValidationMessage.COMMENT_
 @Getter
 public class UpdateCommentRequestDto {
     @NotBlank(message = COMMENT_CONTENTS)
-    private final String contents;
+    private final String content;
 
-    public UpdateCommentRequestDto(String contents){
-        this.contents = contents;
+    public UpdateCommentRequestDto(String content){
+        this.content = content;
     }
 }
