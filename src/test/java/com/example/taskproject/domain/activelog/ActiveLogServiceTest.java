@@ -62,7 +62,7 @@ public class ActiveLogServiceTest {
         request.setRequestURI("/test/uri");
 
         //when
-        activeLogService.logActivity(userId, activityType, targetId, request);
+        activeLogService.logActivity(userId, activityType, targetId);
 
         //then
         ArgumentCaptor<ActiveLog> captor = ArgumentCaptor.forClass(ActiveLog.class);
