@@ -49,7 +49,7 @@ public class TaskService {
         task.setContents(request.getContent());
         task.setTaskPriority(request.getTaskPriority());
         task.setTaskStatus(request.getTaskStatus() != null ? request.getTaskStatus() : TaskStatus.TODO);
-        task.setDeadline(request.getDeadline());
+        task.setDueDate(request.getDeadline());
 
         if (task.getTaskStatus() == TaskStatus.IN_PROGRESS) {
             task.setStartedAt(LocalDateTime.now());
@@ -88,7 +88,7 @@ public class TaskService {
             task.setTaskPriority(request.getTaskPriority());
         }
         if(request.getDeadline() != null) {
-            task.setDeadline(request.getDeadline());
+            task.setDueDate(request.getDeadline());
         }
         if(request.getManagerId() != null) {
             User manager = userRepository.findById(request.getManagerId())

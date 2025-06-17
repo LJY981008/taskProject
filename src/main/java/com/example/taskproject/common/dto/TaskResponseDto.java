@@ -29,7 +29,7 @@ public class TaskResponseDto {
     private TaskStatus taskStatus;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime deadline;
+    private LocalDateTime dueDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startedAt;
@@ -61,7 +61,7 @@ public class TaskResponseDto {
         this.contents = task.getContents();
         this.taskPriority = task.getTaskPriority();
         this.taskStatus = task.getTaskStatus();
-        this.deadline = task.getDeadline();
+        this.dueDate = task.getDueDate();
         this.startedAt = task.getStartedAt();
         this.createdAt = task.getCreatedAt();
         this.modifiedAt = task.getModifiedAt();
