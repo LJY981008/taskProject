@@ -1,5 +1,6 @@
 package com.example.taskproject.domain.task.service;
 import com.example.taskproject.common.dto.TaskUpdateRequestDto;
+import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.taskproject.common.dto.AuthUserDto;
@@ -41,6 +42,9 @@ public class TaskServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ActiveLogService activeLogService;
+
     private AuthUserDto authUserDto;
 
     @BeforeEach
@@ -73,6 +77,7 @@ public class TaskServiceTest {
         assertThat(response.getTitle()).isEqualTo("태스크서비스 테스트");
         assertThat(response.getTaskPriority()).isEqualTo(TaskPriority.HIGH);
         verify(taskRepository, times(1)).save(any(Task.class));
+        verify(activeLogService, times(1)).logActivity(1L, "TASK_CREATED", null);
     }
 
     @Test
@@ -103,6 +108,7 @@ public class TaskServiceTest {
         // then
         assertThat(response.getTitle()).isEqualTo("업데이트 테스트");
         assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
+        verify(activeLogService, times(1)).logActivity(author.getUserId(), "TASK_UPDATED", taskId);
     }
 
     @Test
@@ -176,7 +182,7 @@ public class TaskServiceTest {
         verify(taskRepository, times(1)).save(task);
         assertThat(task.isDeleted()).isTrue();
         assertThat(task.getDeletedAt()).isNotNull();
-
+        verify(activeLogService, times(1)).logActivity(author.getUserId(), "TASK_DELETED", taskId);
     }
 
 

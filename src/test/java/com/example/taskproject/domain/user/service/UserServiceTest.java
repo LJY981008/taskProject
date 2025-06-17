@@ -7,6 +7,7 @@ import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.common.util.JwtUtil;
 import com.example.taskproject.common.util.PasswordEncoder;
+import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.user.dto.LoginRequest;
 import com.example.taskproject.domain.user.dto.RegisterRequest;
 import com.example.taskproject.domain.user.dto.UserResponse;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -37,6 +39,8 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ActiveLogService activeLogService;
     @InjectMocks
     private UserService userService;
 
@@ -54,6 +58,11 @@ class UserServiceTest {
         RegisterRequest request = new RegisterRequest("test", "test@naver.com", "Qwer!234", "test-name");
         Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(Boolean.FALSE);
         Mockito.when(userRepository.existsByEmail(request.getEmail())).thenReturn(Boolean.FALSE);
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            ReflectionTestUtils.setField(user, "userId", 1L);
+            return user;
+        });
         mockStatic.when(() -> CustomMapper.toDto(Mockito.any(User.class), Mockito.eq(UserResponse.class))).thenReturn(Mockito.mock(UserResponse.class));
 
         // when
@@ -61,6 +70,7 @@ class UserServiceTest {
 
         // then
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class));
+        Mockito.verify(activeLogService, Mockito.times(1)).logActivity(1L, "USER_REGISTER", 1L);
         mockStatic.close();
     }
 
