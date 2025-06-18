@@ -26,8 +26,8 @@ class StatisticsServiceTest {
     void 상태별_Task_수_가져오기_성공() {
         //given
         AuthUserDto authUser = new AuthUserDto(1L, "nana@naver.com", UserRole.USER);
-        DashboardStats dashboardStats = new DashboardStats(10L,10L,10L,30L, 10L,10L,3L);
-        Long completionRate = dashboardStats.totalTasks().equals(0L) ? 0L
+        DashboardStats dashboardStats = new DashboardStats(10,10,10,30, 10,10,3);
+        long completionRate = dashboardStats.totalTasks() == 0 ? 0
                 : Math.round(
                 (double) dashboardStats.completedTasks() / dashboardStats.totalTasks() * 100
         );
