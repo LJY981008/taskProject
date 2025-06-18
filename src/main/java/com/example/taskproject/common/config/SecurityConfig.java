@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/tasks/**").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/comments/**").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/auth/**").hasRole(UserRole.USER.name())
+                        .anyRequest().hasRole(UserRole.ADMIN.name())
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(configure -> configure

@@ -1,10 +1,7 @@
 package com.example.taskproject.common.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "active_logs")
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
@@ -22,7 +20,7 @@ public class ActiveLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id")
+    @Column(name = "user_id")
     private Long userId;
 
     private String ip;

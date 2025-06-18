@@ -7,10 +7,9 @@ import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.common.enums.CustomErrorCode;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
-import com.example.taskproject.common.util.JwtUtil;
 import com.example.taskproject.common.util.PasswordEncoder;
-import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.user.dto.*;
+import com.example.taskproject.domain.user.exception.UserNotFoundException;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final ActiveLogService activeLogService;
-    private final JwtUtil jwtUtil;
 
     @Logging(ActivityType.USER_REGISTERED)
     @Transactional
@@ -47,26 +44,25 @@ public class UserService {
     }
 
     @Logging(ActivityType.USER_LOGGED_IN)
-    public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage()));
+    public UserResponse login(LoginRequest request) {
+        User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.LOGIN_FAILED);
         }
-        activeLogService.logActivity(user.getUserId(), "USER_LOGGED_IN", user.getUserId());
 
-        return new LoginResponse(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()));
+        return CustomMapper.toDto(user, UserResponse.class);
     }
 
     public UserResponse getUser(AuthUserDto userDto) {
-        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(UserNotFoundException::new);
         return CustomMapper.toDto(user, UserResponse.class);
     }
 
     @Logging(ActivityType.USER_DELETED)
     @Transactional
     public void withdraw(WithdrawRequest request, AuthUserDto userDto) {
-        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(UserNotFoundException::new);
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.PASSWORD_MISMATCH);
         }
@@ -75,7 +71,7 @@ public class UserService {
     }
 
     public List<UserResponse> getUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByDeletedFalse();
         return users.stream()
                 .map(user -> CustomMapper.toDto(user, UserResponse.class))
                 .collect(Collectors.toList());

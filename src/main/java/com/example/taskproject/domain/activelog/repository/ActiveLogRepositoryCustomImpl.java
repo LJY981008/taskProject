@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.example.taskproject.common.entity.QActiveLog.activeLog;
+import static org.springframework.util.StringUtils.hasText;
+
 @Repository
 @RequiredArgsConstructor
 public class ActiveLogRepositoryCustomImpl implements ActiveLogRepositoryCustom{
@@ -22,13 +24,7 @@ public class ActiveLogRepositoryCustomImpl implements ActiveLogRepositoryCustom{
 
     @Override
     public Page<ActiveLog> findActiveLogsDynamic(LogRequestDto logRequest, Pageable pageable){
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if(logRequest.getUserId() != null) builder.and(activeLog.userId.eq(logRequest.getUserId()));
-        if(logRequest.getActivityType() != null && !logRequest.getActivityType().isEmpty()) builder.and(activeLog.activityType.eq(logRequest.getActivityType()));
-        if(logRequest.getTargetId() != null) builder.and(activeLog.targetId.eq(logRequest.getTargetId()));
-        if(logRequest.getStartDate() != null) builder.and(activeLog.createTime.goe(logRequest.getStartDate().atStartOfDay()));
-        if(logRequest.getEndDate() != null) builder.and(activeLog.createTime.loe(logRequest.getEndDate().atTime(23, 59, 59)));
+        BooleanBuilder builder = buildConditions(logRequest);
 
         List<ActiveLog> content = queryFactory
                 .selectFrom(activeLog)
@@ -38,21 +34,44 @@ public class ActiveLogRepositoryCustomImpl implements ActiveLogRepositoryCustom{
                 .orderBy(convert(logRequest, pageable))
                 .fetch();
 
-        return PageableExecutionUtils.getPage(content, pageable, () -> queryFactory.selectFrom(activeLog).where(builder).fetchCount());
+        return PageableExecutionUtils.getPage(
+                content,
+                pageable,
+                () -> queryFactory.selectFrom(activeLog).where(builder).fetchCount());
     }
 
     private OrderSpecifier<?>[] convert(LogRequestDto logRequest, Pageable pageable){
         if(pageable.getSort().isSorted()){
             return pageable.getSort().stream()
-                    .map(order -> {
-                        if(order.getProperty().equals("createTime")) return order.isAscending() ? activeLog.createTime.asc() : activeLog.createTime.desc();
-                        else if(order.getProperty().equals("activityType")) return order.isAscending() ? activeLog.activityType.asc(): activeLog.activityType.desc();
-                        return activeLog.createTime.desc();
-                    })
+                    .map(this::mapOrder)
                     .toArray(OrderSpecifier[]::new);
         }
 
         if(logRequest.isSortByTime()) return new OrderSpecifier[]{activeLog.createTime.desc()};
         else return new OrderSpecifier[]{activeLog.activityType.desc()};
+    }
+
+    private OrderSpecifier<?> mapOrder(Sort.Order order){
+        String property = order.getProperty();
+        boolean isAscend = order.isAscending();
+
+        if(property.equals("createTime"))
+            return isAscend ? activeLog.createTime.asc() : activeLog.createTime.desc();
+        else if(property.equals("activityType"))
+            return isAscend ? activeLog.activityType.asc() : activeLog.activityType.desc();
+
+        return activeLog.createTime.desc();
+    }
+
+    private BooleanBuilder buildConditions(LogRequestDto logRequest){
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if(logRequest.getUserId() != null) builder.and(activeLog.userId.eq(logRequest.getUserId()));
+        if(hasText(logRequest.getActivityType())) builder.and(activeLog.activityType.eq(logRequest.getActivityType()));
+        if(logRequest.getTargetId() != null) builder.and(activeLog.targetId.eq(logRequest.getTargetId()));
+        if(logRequest.getStartDate() != null) builder.and(activeLog.createTime.goe(logRequest.getStartDate().atStartOfDay()));
+        if(logRequest.getEndDate() != null) builder.and(activeLog.createTime.loe(logRequest.getEndDate().atTime(23, 59, 59)));
+
+        return builder;
     }
 }

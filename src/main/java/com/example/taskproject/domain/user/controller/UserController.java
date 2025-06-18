@@ -2,6 +2,7 @@ package com.example.taskproject.domain.user.controller;
 
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.util.CustomMapper;
+import com.example.taskproject.common.util.JwtUtil;
 import com.example.taskproject.domain.user.dto.*;
 import com.example.taskproject.domain.user.service.UserService;
 import jakarta.validation.Valid;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/auth/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody @Valid RegisterRequest request) {
@@ -29,10 +31,13 @@ public class UserController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequest request) {
-        LoginResponse response = userService.login(request);
+
+        UserResponse loginUser = userService.login(request);
+        String token = jwtUtil.createToken(loginUser.getId(), loginUser.getEmail(), loginUser.getRole());
+
         return ResponseEntity.status(HttpStatus.OK)
-                .header("Authorization", response.getToken())
-                .body(CustomMapper.responseToMap(response, true)); //로그인이 완료되었습니다.
+                .header("Authorization", token)
+                .body(CustomMapper.responseToMap(new LoginResponse(token), true)); //로그인이 완료되었습니다.
     }
 
     @GetMapping("/users/me")

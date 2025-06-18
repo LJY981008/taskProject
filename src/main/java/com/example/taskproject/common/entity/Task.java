@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -25,9 +26,11 @@ public class Task extends BaseEntity {
     private String contents;
 
     @Column(name = "priority")
+    @Enumerated(value = EnumType.STRING)
     private TaskPriority taskPriority;
 
     @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
     private TaskStatus taskStatus;
 
     @Column(name = "dueDate")
@@ -53,6 +56,14 @@ public class Task extends BaseEntity {
         this.taskId = taskId;
         this.title = title;
         this.author = author;
+    }
+
+    public void update(String title, String contents, TaskPriority taskPriority,LocalDateTime dueDate, User manager){
+        Optional.ofNullable(title).ifPresent(t -> this.title = t);
+        Optional.ofNullable(contents).ifPresent(c -> this.contents = c);
+        Optional.ofNullable(taskPriority).ifPresent(tp -> this.taskPriority = tp);
+        Optional.ofNullable(dueDate).ifPresent(d -> this.dueDate = d);
+        Optional.ofNullable(manager).ifPresent(m -> this.manager = m);
     }
 
     @Override
