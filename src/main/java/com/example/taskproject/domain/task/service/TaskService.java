@@ -110,13 +110,16 @@ public class TaskService {
     }
 
     // 테스크 상태 수정
+    @Transactional
     public TaskResponseDto updateTaskStatus(Long taskId, TaskStatusUpdateRequest request, AuthUserDto userDto) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findTaskByTaskId(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         if(!task.getAuthor().getUserId().equals(userDto.getId())) {
             throw new CustomException(UNAUTHENTICATED);
         }
+
+        task.setTaskStatus(request.getStatus());
 
         Task save = taskRepository.save(task);
         activeLogService.logActivity(userDto.getId(), "TASK_STATUS_UPDATED", task.getTaskId());
