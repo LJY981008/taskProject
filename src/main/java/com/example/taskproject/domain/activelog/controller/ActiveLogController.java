@@ -20,10 +20,26 @@ import java.util.Map;
 public class ActiveLogController {
     private final ActiveLogService activeLogService;
 
-    @GetMapping
+    @GetMapping("/my")
     public ResponseEntity<Map<String, Object>> findLogsByConditions(
-            @Valid @RequestBody LogRequestDto logRequest
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String activityType,
+            @RequestParam(required = false) Long targetId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "true") boolean sortByTime
     ){
+        LogRequestDto logRequest = new LogRequestDto(
+                userId,
+                activityType,
+                targetId,
+                null,
+                null,
+                page,
+                size,
+                sortByTime
+        );
+
         Pageable pageable = logRequest.toPageable();
         Page<ActiveLog> logPage = activeLogService.getActiveLogsByConditions(logRequest, pageable);
 
