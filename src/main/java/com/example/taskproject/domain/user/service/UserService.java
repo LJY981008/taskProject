@@ -7,10 +7,9 @@ import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.common.enums.CustomErrorCode;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
-import com.example.taskproject.common.util.JwtUtil;
 import com.example.taskproject.common.util.PasswordEncoder;
-import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.user.dto.*;
+import com.example.taskproject.domain.user.exception.UserNotFoundException;
 import com.example.taskproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,14 +55,14 @@ public class UserService {
     }
 
     public UserResponse getUser(AuthUserDto userDto) {
-        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(UserNotFoundException::new);
         return CustomMapper.toDto(user, UserResponse.class);
     }
 
     @Logging(ActivityType.USER_DELETED)
     @Transactional
     public void withdraw(WithdrawRequest request, AuthUserDto userDto) {
-        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(UserNotFoundException::new);
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.PASSWORD_MISMATCH);
         }
