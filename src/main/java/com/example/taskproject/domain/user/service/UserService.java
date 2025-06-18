@@ -1,7 +1,9 @@
 package com.example.taskproject.domain.user.service;
 
+import com.example.taskproject.common.annotation.Logging;
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.entity.User;
+import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.common.enums.CustomErrorCode;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
@@ -26,6 +28,7 @@ public class UserService {
     private final ActiveLogService activeLogService;
     private final JwtUtil jwtUtil;
 
+    @Logging(ActivityType.USER_REGISTERED)
     @Transactional
     public UserResponse register(RegisterRequest request) {
         if(userRepository.existsByUsername(request.getUsername()))
@@ -40,10 +43,10 @@ public class UserService {
                 request.getUsername(),
                 request.getName()
         ));
-        activeLogService.logActivity(user.getUserId(), "USER_REGISTER", user.getUserId());
         return CustomMapper.toDto(user, UserResponse.class);
     }
 
+    @Logging(ActivityType.USER_LOGGED_IN)
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage()));
 
@@ -60,6 +63,7 @@ public class UserService {
         return CustomMapper.toDto(user, UserResponse.class);
     }
 
+    @Logging(ActivityType.USER_DELETED)
     @Transactional
     public void withdraw(WithdrawRequest request, AuthUserDto userDto) {
         User user = userRepository.findByUserIdAndDeletedFalse(userDto.getId()).orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
