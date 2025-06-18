@@ -15,13 +15,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Optional<Comment> findByCommentIdAndDeletedFalse(Long commentId);
 
-    @EntityGraph(attributePaths = {"task"})
-    List<Comment> findByTask_TaskIdAndDeletedFalse(Long taskId);
-
     Page<Comment> findByTask_TaskIdAndDeletedFalse(Long taskId, Pageable pageable);
-
-    @EntityGraph(attributePaths = {"task"})
-    List<Comment> findByTask_TaskIdAndContentsContainingAndDeletedFalse(Long taskId, String contents);
 
     Page<Comment> findByTask_TaskIdAndContentsContainingAndDeletedFalse(Long taskId, String contents, Pageable pageable);
 
