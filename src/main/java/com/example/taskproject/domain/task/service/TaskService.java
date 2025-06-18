@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.taskproject.common.enums.CustomErrorCode.UNAUTHENTICATED;
 
@@ -111,10 +113,12 @@ public class TaskService {
 
     // 태스크 전체 조회
     @Transactional(readOnly = true)
-    public Page<TaskResponseDto> getAllTasks(Pageable pageable){
-        Page<Task> tasks = taskRepository.findByDeletedFalse(pageable);
+    public List<TaskResponseDto> getAllTasks(
+            Pageable pageable, TaskStatus status
+    ){
+        List<Task> tasks = taskRepository.findByFilterTask(pageable, status);
 
-        return tasks.map(TaskResponseDto::new);
+        return tasks.stream().map(TaskResponseDto::new).collect(Collectors.toList());
     }
 
     // 태스크 단건 조회
