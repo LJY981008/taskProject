@@ -1,10 +1,12 @@
 package com.example.taskproject.domain.comment.service;
 
+import com.example.taskproject.common.annotation.Logging;
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.dto.PagedResponse;
 import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
+import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.activelog.service.ActiveLogService;
@@ -48,6 +50,7 @@ public class CommentService {
      * @param userDto 로그인된 사용자 dto
      * @return CreateCommentResponseDto 생성된 댓글 응답 dto
      */
+    @Logging(ActivityType.COMMENT_CREATED)
     @Transactional
     public CommentResponseDto createComment(
             Long taskId,
@@ -65,7 +68,7 @@ public class CommentService {
 
         Comment comment = new Comment(requestDto.getContent(), user, task);
         commentRepository.save(comment);
-        activeLogService.logActivity(user.getUserId(), "COMMENT_CREATED", comment.getCommentId());
+        //activeLogService.logActivity(user.getUserId(), "COMMENT_CREATED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, CommentResponseDto.class);
     }
@@ -121,6 +124,7 @@ public class CommentService {
      * @param userDto 로그인된 사용자 dto
      * @return UpdateCommentResponseDto 수정된 댓글 응답 dto
      */
+    @Logging(ActivityType.COMMENT_UPDATED)
     @Transactional
     public CommentResponseDto updateComment(
             Long taskId,
@@ -145,7 +149,7 @@ public class CommentService {
         }
 
         comment.update(requestDto.getContent());
-        activeLogService.logActivity(user.getUserId(), "COMMENT_UPDATED", comment.getCommentId());
+        //activeLogService.logActivity(user.getUserId(), "COMMENT_UPDATED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, CommentResponseDto.class);
     }
@@ -157,6 +161,7 @@ public class CommentService {
      * @param commentId 요청 dto
      * @param userDto 로그인된 사용자 dto
      */
+    @Logging(ActivityType.COMMENT_DELETED)
     @Transactional
     public void deleteComment(
             Long commentId,
@@ -174,6 +179,6 @@ public class CommentService {
 
         comment.delete();
         commentRepository.save(comment);
-        activeLogService.logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
+        //activeLogService.logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
     }
 }

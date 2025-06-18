@@ -35,19 +35,24 @@ public class ActiveLogRepositoryCustomImpl implements ActiveLogRepositoryCustom{
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(convert(pageable.getSort()))
+                .orderBy(convert(logRequest, pageable))
                 .fetch();
 
         return PageableExecutionUtils.getPage(content, pageable, () -> queryFactory.selectFrom(activeLog).where(builder).fetchCount());
     }
 
-    private OrderSpecifier<?>[] convert(Sort sort){
-        return sort.stream()
-                .map(order -> {
-                    if(order.getProperty().equals("createTime")) return order.isAscending() ? activeLog.createTime.asc() : activeLog.createTime.desc();
-                    else if(order.getProperty().equals("activityType")) return order.isAscending() ? activeLog.activityType.asc() : activeLog.activityType.desc();
-                    return activeLog.createTime.desc();
-                })
-                .toArray(OrderSpecifier[]::new);
+    private OrderSpecifier<?>[] convert(LogRequestDto logRequest, Pageable pageable){
+        if(pageable.getSort().isSorted()){
+            return pageable.getSort().stream()
+                    .map(order -> {
+                        if(order.getProperty().equals("createTime")) return order.isAscending() ? activeLog.createTime.asc() : activeLog.createTime.desc();
+                        else if(order.getProperty().equals("activityType")) return order.isAscending() ? activeLog.activityType.asc(): activeLog.activityType.desc();
+                        return activeLog.createTime.desc();
+                    })
+                    .toArray(OrderSpecifier[]::new);
+        }
+
+        if(logRequest.isSortByTime()) return new OrderSpecifier[]{activeLog.createTime.desc()};
+        else return new OrderSpecifier[]{activeLog.activityType.desc()};
     }
 }
