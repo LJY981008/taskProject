@@ -43,11 +43,21 @@ public class ActivityLogAspect {
                     userId = commentResponse.getUserId();
                     targetId = commentResponse.getId();
                 }
-                else if(result instanceof AuthUserDto authUser){
-                    userId = authUser.getId();
-                    targetId = authUser.getId();
-                }
             }
+
+            if(userId == null || targetId == null){
+                String methodName = joinPoint.getSignature().getName();
+                Long param = null;
+
+                for(Object arg : joinPoint.getArgs()){
+                    if(arg instanceof AuthUserDto authUser) userId = authUser.getId();
+                    else if(arg instanceof Long l && param == null) param = l;
+                }
+                if(methodName.contains("deleteComment")) targetId = param;
+                else if(methodName.contains("deleteTask")) targetId = param;
+                else if(methodName.contains("withdraw")) targetId = userId;
+            }
+
             if(userId != null && targetId != null) activeLogService.logActivity(userId, activityType.name(), targetId);
             else log.warn("로그 기록 실패");
         } catch(Exception e){
