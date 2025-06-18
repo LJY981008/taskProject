@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final ActiveLogService activeLogService;
-    private final JwtUtil jwtUtil;
 
     @Logging(ActivityType.USER_REGISTERED)
     @Transactional
@@ -74,7 +72,7 @@ public class UserService {
     }
 
     public List<UserResponse> getUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByDeletedFalse();
         return users.stream()
                 .map(user -> CustomMapper.toDto(user, UserResponse.class))
                 .collect(Collectors.toList());
