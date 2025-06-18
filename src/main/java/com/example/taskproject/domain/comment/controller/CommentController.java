@@ -54,14 +54,14 @@ public class CommentController {
      * 댓글 전체 조회
      *
      * @param taskId 태스크 id
-     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     * @return List<CommentResponseDto> 댓글 조회 응답 dto 리스트
      */
     @GetMapping("/tasks/{taskId}/comments")
     public ResponseEntity<Map<String, Object>> findAllComment(
             @PathVariable Long taskId,
             Pageable pageable){
 
-        PagedResponse<FindCommentResponseDto> responseDto = commentService.findAll(taskId, pageable);
+        PagedResponse<CommentResponseDto> responseDto = commentService.findAll(taskId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(responseDto, true));
@@ -73,7 +73,7 @@ public class CommentController {
      *
      * @param taskId     태스크 id
      * @param requestDto 요청 dto
-     * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     * @return List<CommentResponseDto> 댓글 조회 응답 dto 리스트
      */
     @GetMapping("/tasks/{taskId}/comments/search")
     public ResponseEntity<Map<String, Object>> findByContents(
@@ -81,7 +81,7 @@ public class CommentController {
             @RequestBody FindCommentRequestDto requestDto,
             Pageable pageable){
 
-        PagedResponse<FindCommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto, pageable);
+        PagedResponse<CommentResponseDto> responseDto = commentService.findByContents(taskId, requestDto, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(responseDto, true));
@@ -114,7 +114,6 @@ public class CommentController {
     /**
      * <p>댓글 삭제</p>
      *
-     * @param taskId    태스크 id
      * @param commentId 요청 dto
      * @param userDto   로그인된 사용자 dto
      */

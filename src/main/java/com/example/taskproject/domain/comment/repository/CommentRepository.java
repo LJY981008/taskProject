@@ -11,12 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
     Optional<Comment> findByCommentIdAndDeletedFalse(Long commentId);
-
-    Page<Comment> findByTask_TaskIdAndDeletedFalse(Long taskId, Pageable pageable);
-
-    Page<Comment> findByTask_TaskIdAndContentsContainingAndDeletedFalse(Long taskId, String contents, Pageable pageable);
 
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -45,6 +46,9 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "manager_id")
     private User manager;
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     public Task(){
     }
 
@@ -60,5 +64,14 @@ public class Task extends BaseEntity {
         Optional.ofNullable(taskPriority).ifPresent(tp -> this.taskPriority = tp);
         Optional.ofNullable(dueDate).ifPresent(d -> this.dueDate = d);
         Optional.ofNullable(manager).ifPresent(m -> this.manager = m);
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+
+        if(!this.comments.isEmpty()) {
+            this.comments.forEach(Comment::delete);
+        }
     }
 }

@@ -152,8 +152,8 @@ public class TaskService {
         if (!task.getAuthor().getUserId().equals(userDto.getId())) {
             throw new CustomException(UNAUTHENTICATED);
         }
+
         task.delete();
-        //activeLogService.logActivity(userDto.getId(), "TASK_DELETED", task.getTaskId());
 
         taskRepository.save(task);
     }

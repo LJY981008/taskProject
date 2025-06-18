@@ -9,7 +9,6 @@ import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.common.util.CustomMapper;
-import com.example.taskproject.domain.activelog.service.ActiveLogService;
 import com.example.taskproject.domain.comment.dto.*;
 import com.example.taskproject.domain.comment.repository.CommentRepository;
 import com.example.taskproject.domain.task.repository.TaskRepository;
@@ -32,13 +31,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
-    private final ActiveLogService activeLogService;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, TaskRepository taskRepository, ActiveLogService activeLogService){
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, TaskRepository taskRepository){
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
-        this.activeLogService = activeLogService;
     }
 
 
@@ -57,18 +54,12 @@ public class CommentService {
             CreateCommentRequestDto requestDto,
             AuthUserDto userDto){
 
-
         User user = userRepository.findUserByEmailAndDeletedFalse(userDto.getEmail()).orElseThrow(() -> new CustomException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
         Task task = taskRepository.findTaskByTaskIdAndDeletedFalse(taskId).orElseThrow(() -> new CustomException(TASK_NOT_FOUND, TASK_NOT_FOUND.getMessage()));
 
-        // 요청 dto에 댓글 내용이 입력되지 않을 경우 예외 처리
-        if(requestDto.getContent() == null || requestDto.getContent().isBlank()){
-            throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
-        }
 
-        Comment comment = new Comment(requestDto.getContent(), user, task);
+        Comment comment = new Comment(requestDto.content(), user, task);
         commentRepository.save(comment);
-        //activeLogService.logActivity(user.getUserId(), "COMMENT_CREATED", comment.getCommentId());
 
         return CustomMapper.toDto(comment, CommentResponseDto.class);
     }
@@ -78,13 +69,13 @@ public class CommentService {
      * 댓글 전체 조회
      *
      * @param taskId 태스크 id
-     * @return PagedResponse<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     * @return PagedResponse<CommentResponseDto> 댓글 조회 응답 dto 리스트
      */
     @Transactional
-    public PagedResponse<FindCommentResponseDto> findAll(Long taskId, Pageable pageable){
-        Page<Comment> comments = commentRepository.findByTask_TaskIdAndDeletedFalse(taskId, pageable);
+    public PagedResponse<CommentResponseDto> findAll(Long taskId, Pageable pageable){
+        Page<Comment> comments = commentRepository.findByComments(taskId, pageable);
 
-        Page<FindCommentResponseDto> dtoPage = comments.map(FindCommentResponseDto::new);
+        Page<CommentResponseDto> dtoPage = comments.map(CommentResponseDto::new);
         return new PagedResponse<>(dtoPage);
     }
 
@@ -94,23 +85,19 @@ public class CommentService {
      *
      * @param taskId 태스크 id
      * @param requestDto 요청 dto
-     * @return PagedResponse<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
+     * @return PagedResponse<CommentResponseDto> 댓글 조회 응답 dto 리스트
      */
     @Transactional
-    public PagedResponse<FindCommentResponseDto> findByContents(
+    public PagedResponse<CommentResponseDto> findByContents(
             Long taskId,
             FindCommentRequestDto requestDto,
             Pageable pageable){
 
-        if(requestDto.getContent() == null || requestDto.getContent().isBlank()){
-            throw new CustomException(COMMENT_NOT_ENTERED, COMMENT_NOT_ENTERED.getMessage());
-        }
-
         Page<Comment> comments =
-                commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(
-                        taskId, requestDto.getContent(), pageable);
+                commentRepository.findByCommentsContent(
+                        taskId, requestDto.content(), pageable);
 
-        Page<FindCommentResponseDto> dtoPage = comments.map(FindCommentResponseDto::new);
+        Page<CommentResponseDto> dtoPage = comments.map(CommentResponseDto::new);
         return new PagedResponse<>(dtoPage);
     }
 
@@ -144,12 +131,11 @@ public class CommentService {
         }
 
         // 기존 댓글 내용과 수정 댓글 내용이 동일할 경우 예외 처리
-        if(comment.getContents().equals(requestDto.getContent())){
+        if(comment.getContents().equals(requestDto.content())){
             throw new CustomException(COMMENT_IS_EQUAL, COMMENT_IS_EQUAL.getMessage());
         }
 
-        comment.update(requestDto.getContent());
-        //activeLogService.logActivity(user.getUserId(), "COMMENT_UPDATED", comment.getCommentId());
+        comment.update(requestDto.content());
 
         return CustomMapper.toDto(comment, CommentResponseDto.class);
     }
@@ -168,7 +154,6 @@ public class CommentService {
             AuthUserDto userDto
     ){
 
-
         User user = userRepository.findUserByEmailAndDeletedFalse(userDto.getEmail()).orElseThrow(() -> new CustomException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
         Comment comment = commentRepository.findByCommentIdAndDeletedFalse(commentId).orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
 
@@ -179,6 +164,5 @@ public class CommentService {
 
         comment.delete();
         commentRepository.save(comment);
-        //activeLogService.logActivity(user.getUserId(), "COMMENT_DELETED", comment.getCommentId());
     }
 }
