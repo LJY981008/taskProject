@@ -47,15 +47,14 @@ public class UserService {
     }
 
     @Logging(ActivityType.USER_LOGGED_IN)
-    public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED, CustomErrorCode.LOGIN_FAILED.getMessage()));
+    public UserResponse login(LoginRequest request) {
+        User user = userRepository.findUserByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILED));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.LOGIN_FAILED);
         }
-        activeLogService.logActivity(user.getUserId(), "USER_LOGGED_IN", user.getUserId());
 
-        return new LoginResponse(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()));
+        return CustomMapper.toDto(user, UserResponse.class);
     }
 
     public UserResponse getUser(AuthUserDto userDto) {
