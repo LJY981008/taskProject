@@ -1,6 +1,7 @@
 package com.example.taskproject.common.aop;
 
 import com.example.taskproject.common.annotation.Logging;
+import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.common.dto.TaskResponseDto;
 import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.domain.activelog.service.ActiveLogService;
@@ -41,6 +42,10 @@ public class ActivityLogAspect {
                 else if(result instanceof CommentResponseDto commentResponse){
                     userId = commentResponse.getUserId();
                     targetId = commentResponse.getId();
+                }
+                else if(result instanceof AuthUserDto authUser){
+                    userId = authUser.getId();
+                    targetId = authUser.getId();
                 }
             }
             if(userId != null && targetId != null) activeLogService.logActivity(userId, activityType.name(), targetId);
