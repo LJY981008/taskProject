@@ -4,6 +4,7 @@ package com.example.taskproject.domain.task.service;
 import com.example.taskproject.common.dto.*;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
+import com.example.taskproject.common.enums.ActivityType;
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.exception.CustomException;
 import com.example.taskproject.domain.activelog.service.ActiveLogService;
@@ -33,6 +34,7 @@ public class TaskService {
 
 
     // 태스크 생성
+    @Logging(ActivityType.TASK_CREATED)
     @Transactional
     public TaskResponseDto createTask(TaskCreateRequestDto request, AuthUserDto userDto) {
         User author = userRepository.findById(userDto.getId())
@@ -64,13 +66,14 @@ public class TaskService {
 
         Task saved = taskRepository.save(task);
 
-        activeLogService.logActivity(userDto.getId(), "TASK_CREATED", task.getTaskId());
+        //activeLogService.logActivity(userDto.getId(), "TASK_CREATED", task.getTaskId());
 
         return new TaskResponseDto(saved);
 
     }
 
     // 태스크 수정
+    @Logging(ActivityType.TASK_UPDATED)
     @Transactional
     public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request, AuthUserDto userDto) {
         Task task = taskRepository.findById(taskId)
@@ -104,7 +107,7 @@ public class TaskService {
             }
         }
         Task saved = taskRepository.save(task);
-        activeLogService.logActivity(userDto.getId(), "TASK_UPDATED", task.getTaskId());
+        //activeLogService.logActivity(userDto.getId(), "TASK_UPDATED", task.getTaskId());
 
         return new TaskResponseDto(saved);
     }
@@ -149,6 +152,7 @@ public class TaskService {
     }
 
     // 태스크 삭제(soft delete)
+    @Logging(ActivityType.TASK_DELETED)
     @Transactional
     public void deleteTask(Long taskId, AuthUserDto userDto) {
         Task task = taskRepository.findById(taskId)
@@ -159,7 +163,7 @@ public class TaskService {
         }
         task.setDeleted(true);
         task.setDeletedAt(LocalDateTime.now());
-        activeLogService.logActivity(userDto.getId(), "TASK_DELETED", task.getTaskId());
+        //activeLogService.logActivity(userDto.getId(), "TASK_DELETED", task.getTaskId());
 
         taskRepository.save(task);
     }
