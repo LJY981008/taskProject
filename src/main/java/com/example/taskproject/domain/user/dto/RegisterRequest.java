@@ -1,5 +1,6 @@
 package com.example.taskproject.domain.user.dto;
 
+import com.example.taskproject.common.constant.ValidationMessage;
 import com.example.taskproject.domain.user.annotation.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,19 +11,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class RegisterRequest {
-    @NotBlank
+    @NotBlank(message = ValidationMessage.USERNAME_REQUIRED)
     @Size(min = 4,max = 20)
     private String username;
 
-    @NotBlank
+    @NotBlank(message = ValidationMessage.EMAIL_REQUIRED)
     @Email
     private String email;
 
-    @NotBlank
+    @NotBlank(message = ValidationMessage.PASSWORD_REQUIRED)
     @ValidPassword
     private String password;
 
-    @NotBlank
+    @NotBlank(message = ValidationMessage.NAME_REQUIRED)
     @Size(min = 2, max = 50)
     private String name;
 
