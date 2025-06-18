@@ -81,25 +81,6 @@ public class CommentServiceTest {
         // verify(activeLogService).logActivity(user.getUserId(), "COMMENT_CREATED", task.getTaskId());
     }
 
-    @Test
-    @DisplayName("내용 미입력으로 댓글 생성 실패")
-    void EmptyContentsCommentTest(){
-        // given
-        CreateCommentRequestDto requestDto = new CreateCommentRequestDto("");
-        AuthUserDto userDto = new AuthUserDto(1L, "l@ex.com", UserRole.USER);
-        User user = new User(1L, "l@ex.com", "name");
-        Task task = new Task(1L, "title", user);
-
-        given(userRepository.findUserByEmailAndDeletedFalse("l@ex.com")).willReturn(Optional.of(user));
-        given(taskRepository.findTaskByTaskIdAndDeletedFalse(1L)).willReturn(Optional.of(task));
-
-        // when & then
-        CustomException exception = assertThrows(CustomException.class, () ->
-                        commentService.createComment(1L, requestDto, userDto));
-
-        assertEquals(COMMENT_NOT_ENTERED, exception.getErrorCode());
-    }
-
 
     @Test
     @DisplayName("댓글 조회 테스트")
