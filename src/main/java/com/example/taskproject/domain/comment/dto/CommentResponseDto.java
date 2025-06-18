@@ -1,10 +1,8 @@
 package com.example.taskproject.domain.comment.dto;
 
-import com.example.taskproject.common.dto.TaskResponseDto;
 import com.example.taskproject.common.dto.UserInfo;
 import com.example.taskproject.common.entity.Comment;
 import com.example.taskproject.common.entity.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
