@@ -1,11 +1,9 @@
 package com.example.taskproject.domain.task.controller;
 
 
-import com.example.taskproject.common.dto.AuthUserDto;
-import com.example.taskproject.common.dto.TaskCreateRequestDto;
-import com.example.taskproject.common.dto.TaskResponseDto;
-import com.example.taskproject.common.dto.TaskUpdateRequestDto;
+import com.example.taskproject.common.dto.*;
 import com.example.taskproject.common.entity.Task;
+import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.task.service.TaskService;
@@ -19,7 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 @RequiredArgsConstructor
 @RestController
@@ -43,8 +44,20 @@ public class TaskController {
     public ResponseEntity<Map<String, Object>> updateTask(
             @PathVariable Long taskId,
             @RequestBody TaskUpdateRequestDto request,
-            @AuthenticationPrincipal AuthUserDto userDto){
+            @AuthenticationPrincipal AuthUserDto userDto
+    ){
         TaskResponseDto response = taskService.updateTask(taskId, request, userDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(response, true));
+    }
+
+    @PatchMapping("{taskId}/status")
+    public ResponseEntity<Map<String, Object>> updateTaskStatus(
+            @PathVariable Long taskId,
+            @RequestBody @Valid TaskStatusUpdateRequest request,
+            @AuthenticationPrincipal AuthUserDto userDto
+    ) {
+        TaskResponseDto response = taskService.updateTaskStatus(taskId, request, userDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(response, true));
     }
@@ -59,8 +72,16 @@ public class TaskController {
 
     // 태스크 전체 조회
     @GetMapping
-    public ResponseEntity<Map<String,Object>> getAllTasks(Pageable pageable) {
-        Page<TaskResponseDto> tasks = taskService.getAllTasks(pageable);
+    public ResponseEntity<Map<String,Object>> getAllTasks(
+            Pageable pageable,
+            @RequestParam TaskStatus status,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam Optional<Long> assigneeId,
+            @AuthenticationPrincipal AuthUserDto userDto
+
+    ) {
+        long assId = assigneeId.orElse(userDto.getId());
+        Page<TaskResponseDto> tasks = taskService.getAllTasks(pageable, status, search, assId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(tasks, true));
     }

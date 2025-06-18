@@ -9,6 +9,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -24,7 +25,7 @@ public class ActiveLogService {
     /**
      * @author 김도연
      * @param userId 사용자(주체) userID값
-     * @param activityType 활동 내역(LOGIN, TASK_UPDATE 등)
+     * @param activityType 활동 유형(LOGIN, TASK_UPDATE 등)
      * @param targetId 대상 ID값
      * request HttpServletRequest, Ip, Method, URL값 저장 위해 사용
      * use example : activeLogService.logActivity(1L, "LOGIN", 2L, request);
@@ -33,13 +34,22 @@ public class ActiveLogService {
     public void logActivity(Long userId, String activityType, Long targetId){
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-        ActiveLog log = new ActiveLog();
-        log.setUserId(userId);
-        log.setActivityType(activityType);
-        log.setTargetId(targetId);
-        log.setIp(request.getRemoteAddr());
-        log.setRequestMethod(request.getMethod());
-        log.setRequestUrl(request.getRequestURI());
+        ActiveLog log = ActiveLog.builder()
+                .userId(userId)
+                .activityType(activityType)
+                .targetId(targetId)
+                .ip(getSafeRemoteAddr(request))
+                .requestMethod(request.getMethod())
+                .requestUrl(request.getRequestURI())
+                .build();
+
         activeLogRepository.save(log);
+    }
+
+    private String getSafeRemoteAddr(HttpServletRequest request){
+        String ip = request.getHeader("X-Forwarded-For");
+        if(StringUtils.hasText(ip)) return ip.split(",")[0].trim();
+
+        return request.getRemoteAddr();
     }
 }

@@ -20,10 +20,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByEmail(String email);
 
-    @Modifying
-    @Query("UPDATE User u SET u.deleted = true, u.deletedAt = CURRENT TIMESTAMP WHERE u.userId = :id")
-    void softDeleteById(@Param("id") Long id);
-
-    User findByUsername(String username);
-
+    List<User> findAllByDeletedFalse();
 }

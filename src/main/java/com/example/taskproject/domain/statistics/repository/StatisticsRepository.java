@@ -1,21 +1,8 @@
 package com.example.taskproject.domain.statistics.repository;
 
-import com.example.taskproject.common.enums.TaskStatus;
-import com.example.taskproject.domain.statistics.dto.OverDueTaskCount;
-import com.example.taskproject.domain.statistics.dto.StatusCount;
-import com.example.taskproject.domain.statistics.dto.TeamTaskStatusCount;
-import com.example.taskproject.domain.statistics.dto.WeekFinishTaskCount;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import com.example.taskproject.domain.statistics.dto.*;
 
 public interface StatisticsRepository {
 
-    List<StatusCount> findStatusCount();
-
-    TeamTaskStatusCount findTeamTaskStatusCount(String authorUsername, TaskStatus taskStatus);
-
-    WeekFinishTaskCount findWeekFinishTaskCounts(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end);
-
-    OverDueTaskCount findOverDueTaskCount();
+    DashboardStats findDashboardStats(String authorUsername);
 }

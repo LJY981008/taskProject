@@ -171,7 +171,7 @@ class UserServiceTest {
         Mockito.when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(Boolean.TRUE);
         // when + then
         userService.withdraw(request, userDto);
-        Mockito.verify(userRepository,Mockito.times(1)).softDeleteById(user.getUserId());
+        Mockito.verify(user,Mockito.times(1)).delete();
         mockStatic.close();
     }
 
