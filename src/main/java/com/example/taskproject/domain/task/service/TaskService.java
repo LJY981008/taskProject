@@ -126,12 +126,15 @@ public class TaskService {
 
     // 태스크 전체 조회
     @Transactional(readOnly = true)
-    public List<TaskResponseDto> getAllTasks(
-            Pageable pageable, TaskStatus status
+    public Page<TaskResponseDto> getAllTasks(
+            Pageable pageable,
+            TaskStatus status,
+            String search,
+            long assigneeId
     ){
-        List<Task> tasks = taskRepository.findByFilterTask(pageable, status);
+        Page<Task> tasks = taskRepository.findByFilterTask(pageable, status, search, assigneeId);
 
-        return tasks.stream().map(TaskResponseDto::new).collect(Collectors.toList());
+        return tasks.map(TaskResponseDto::new);
     }
 
     // 태스크 단건 조회
