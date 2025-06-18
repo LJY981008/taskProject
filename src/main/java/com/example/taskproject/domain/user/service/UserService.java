@@ -71,7 +71,6 @@ public class UserService {
             throw new CustomException(CustomErrorCode.PASSWORD_MISMATCH);
         }
         userRepository.softDeleteById(user.getUserId());
-        activeLogService.logActivity(user.getUserId(), "USER_DELETE", user.getUserId());
     }
 
     public List<UserResponse> getUsers() {
