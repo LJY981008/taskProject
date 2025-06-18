@@ -51,7 +51,7 @@ public class TaskController {
                 .body(CustomMapper.responseToMap(response, true));
     }
 
-    @PutMapping("{taskId}/status")
+    @PatchMapping("{taskId}/status")
     public ResponseEntity<Map<String, Object>> updateTaskStatus(
             @PathVariable Long taskId,
             @RequestBody @Valid TaskStatusUpdateRequest request,
