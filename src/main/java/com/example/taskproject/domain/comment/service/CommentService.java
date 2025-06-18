@@ -154,15 +154,14 @@ public class CommentService {
     /**
      * <p>댓글 삭제</p>
      *
-     * @param taskId 태스크 id
      * @param commentId 요청 dto
      * @param userDto 로그인된 사용자 dto
      */
     @Transactional
     public void deleteComment(
-            Long taskId,
             Long commentId,
-            AuthUserDto userDto){
+            AuthUserDto userDto
+    ){
 
 
         User user = userRepository.findUserByEmailAndDeletedFalse(userDto.getEmail()).orElseThrow(() -> new CustomException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));

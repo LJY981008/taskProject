@@ -20,7 +20,7 @@ import java.util.Map;
  * @author 이현하
  */
 @RestController
-@RequestMapping("/api/tasks/{taskId}/comments")
+@RequestMapping("/api")
 public class CommentController {
     private final CommentService commentService;
 
@@ -37,7 +37,7 @@ public class CommentController {
      * @param userDto    로그인한 사용자 dto
      * @return CreateCommentResponseDto 생성된 댓글 응답 dto
      */
-    @PostMapping
+    @PostMapping("/tasks/{taskId}/comments")
     public ResponseEntity<Map<String, Object>> createComment(
             @PathVariable Long taskId,
             @RequestBody @Valid CreateCommentRequestDto requestDto,
@@ -56,7 +56,7 @@ public class CommentController {
      * @param taskId 태스크 id
      * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
      */
-    @GetMapping
+    @GetMapping("/tasks/{taskId}/comments")
     public ResponseEntity<Map<String, Object>> findAllComment(
             @PathVariable Long taskId,
             Pageable pageable){
@@ -75,7 +75,7 @@ public class CommentController {
      * @param requestDto 요청 dto
      * @return List<FindCommentResponseDto> 댓글 조회 응답 dto 리스트
      */
-    @GetMapping("/search")
+    @GetMapping("/tasks/{taskId}/comments/search")
     public ResponseEntity<Map<String, Object>> findByContents(
             @PathVariable Long taskId,
             @RequestBody FindCommentRequestDto requestDto,
@@ -97,7 +97,7 @@ public class CommentController {
      * @param userDto    로그인된 사용자 dto
      * @return UpdateCommentResponseDto 수정된 댓글 응답 dto
      */
-    @PutMapping("/{commentId}")
+    @PutMapping("/tasks/{taskId}/comments/{commentId}")
     public ResponseEntity<Map<String, Object>> updateComment(
             @PathVariable Long taskId,
             @PathVariable Long commentId,
@@ -118,13 +118,12 @@ public class CommentController {
      * @param commentId 요청 dto
      * @param userDto   로그인된 사용자 dto
      */
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Map<String, Object>> deleteComment(
-            @PathVariable Long taskId,
             @PathVariable Long commentId,
             @AuthenticationPrincipal AuthUserDto userDto){
 
-        commentService.deleteComment(taskId, commentId, userDto);
+        commentService.deleteComment(commentId, userDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(null, true));

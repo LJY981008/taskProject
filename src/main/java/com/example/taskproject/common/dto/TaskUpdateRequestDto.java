@@ -24,7 +24,8 @@ public class TaskUpdateRequestDto {
     private String description;
     private TaskPriority priority;
     private TaskStatus status;
-    private LocalDate dueDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime dueDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startedAt;
     private Long assigneeId;

@@ -90,7 +90,7 @@ public class TaskService {
             task.setTaskPriority(request.getPriority());
         }
         if(request.getDueDate() != null) {
-            task.setDueDate(request.getDueDate().atStartOfDay());
+            task.setDueDate(request.getDueDate());
         }
         if(request.getAssigneeId() != null) {
             User manager = userRepository.findById(request.getAssigneeId())
