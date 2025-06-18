@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.taskproject.common.enums.CustomErrorCode.UNAUTHENTICATED;
 
@@ -94,7 +96,7 @@ public class TaskService {
             task.setTaskPriority(request.getPriority());
         }
         if(request.getDueDate() != null) {
-            task.setDueDate(request.getDueDate().atStartOfDay());
+            task.setDueDate(request.getDueDate());
         }
         if(request.getAssigneeId() != null) {
             User manager = userRepository.findById(request.getAssigneeId())
@@ -115,8 +117,13 @@ public class TaskService {
 
     // 태스크 전체 조회
     @Transactional(readOnly = true)
-    public Page<TaskResponseDto> getAllTasks(Pageable pageable){
-        Page<Task> tasks = taskRepository.findByDeletedFalse(pageable);
+    public Page<TaskResponseDto> getAllTasks(
+            Pageable pageable,
+            TaskStatus status,
+            String search,
+            long assigneeId
+    ){
+        Page<Task> tasks = taskRepository.findByFilterTask(pageable, status, search, assigneeId);
 
         return tasks.map(TaskResponseDto::new);
     }

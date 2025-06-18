@@ -6,6 +6,7 @@ import com.example.taskproject.common.dto.TaskCreateRequestDto;
 import com.example.taskproject.common.dto.TaskResponseDto;
 import com.example.taskproject.common.dto.TaskUpdateRequestDto;
 import com.example.taskproject.common.entity.Task;
+import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.util.CustomMapper;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import com.example.taskproject.domain.task.service.TaskService;
@@ -19,7 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 @RequiredArgsConstructor
 @RestController
@@ -59,8 +63,16 @@ public class TaskController {
 
     // 태스크 전체 조회
     @GetMapping
-    public ResponseEntity<Map<String,Object>> getAllTasks(Pageable pageable) {
-        Page<TaskResponseDto> tasks = taskService.getAllTasks(pageable);
+    public ResponseEntity<Map<String,Object>> getAllTasks(
+            Pageable pageable,
+            @RequestParam TaskStatus status,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam Optional<Long> assigneeId,
+            @AuthenticationPrincipal AuthUserDto userDto
+
+    ) {
+        long assId = assigneeId.orElse(userDto.getId());
+        Page<TaskResponseDto> tasks = taskService.getAllTasks(pageable, status, search, assId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(tasks, true));
     }

@@ -70,7 +70,8 @@ public class UserService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(CustomErrorCode.PASSWORD_MISMATCH);
         }
-        userRepository.softDeleteById(user.getUserId());
+        user.delete();
+        userRepository.save(user);
     }
 
     public List<UserResponse> getUsers() {
