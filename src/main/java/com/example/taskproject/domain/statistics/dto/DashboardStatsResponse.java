@@ -7,19 +7,19 @@ import lombok.Getter;
 @Builder
 public class DashboardStatsResponse {
 
-    private Long todoTasks;
+    private long todoTasks;
 
-    private Long inProgressTasks;
+    private long inProgressTasks;
 
-    private Long completedTasks;
+    private long completedTasks;
 
-    private Long totalTasks;
+    private long totalTasks;
 
-    private Long overdueTasks;
+    private long overdueTasks;
 
-    private Long teamProgress;
+    private long teamProgress;
 
-    private Long myTasksToday;
+    private long myTasksToday;
 
-    private Long completionRate;
+    private long completionRate;
 }

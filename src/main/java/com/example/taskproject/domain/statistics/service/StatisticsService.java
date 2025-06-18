@@ -31,7 +31,7 @@ public class StatisticsService {
         DashboardStats dashboardStats = taskRepository.findDashboardStats(authEmail);
 
 
-        Long completionRate = dashboardStats.totalTasks().equals(0L) ? 0L
+        long completionRate = dashboardStats.totalTasks() == 0 ? 0
                 : Math.round(
                         (double) dashboardStats.completedTasks() / dashboardStats.totalTasks() * 100
         );
