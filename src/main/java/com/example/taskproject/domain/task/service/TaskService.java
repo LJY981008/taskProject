@@ -1,10 +1,7 @@
 package com.example.taskproject.domain.task.service;
 
 
-import com.example.taskproject.common.dto.AuthUserDto;
-import com.example.taskproject.common.dto.TaskCreateRequestDto;
-import com.example.taskproject.common.dto.TaskResponseDto;
-import com.example.taskproject.common.dto.TaskUpdateRequestDto;
+import com.example.taskproject.common.dto.*;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
 import com.example.taskproject.common.enums.TaskStatus;
@@ -23,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.taskproject.common.enums.CustomErrorCode.TASK_NOT_FOUND;
 import static com.example.taskproject.common.enums.CustomErrorCode.UNAUTHENTICATED;
 
 @RequiredArgsConstructor
@@ -111,6 +109,21 @@ public class TaskService {
         return new TaskResponseDto(saved);
     }
 
+    // 테스크 상태 수정
+    public TaskResponseDto updateTaskStatus(Long taskId, TaskStatusUpdateRequest request, AuthUserDto userDto) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
+
+        if(!task.getAuthor().getUserId().equals(userDto.getId())) {
+            throw new CustomException(UNAUTHENTICATED);
+        }
+
+        Task save = taskRepository.save(task);
+        activeLogService.logActivity(userDto.getId(), "TASK_STATUS_UPDATED", task.getTaskId());
+
+        return new TaskResponseDto(save);
+    }
+
     // 태스크 전체 조회
     @Transactional(readOnly = true)
     public List<TaskResponseDto> getAllTasks(
@@ -144,6 +157,5 @@ public class TaskService {
 
         taskRepository.save(task);
     }
-
 
 }

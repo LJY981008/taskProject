@@ -1,10 +1,7 @@
 package com.example.taskproject.domain.task.controller;
 
 
-import com.example.taskproject.common.dto.AuthUserDto;
-import com.example.taskproject.common.dto.TaskCreateRequestDto;
-import com.example.taskproject.common.dto.TaskResponseDto;
-import com.example.taskproject.common.dto.TaskUpdateRequestDto;
+import com.example.taskproject.common.dto.*;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.enums.TaskStatus;
 import com.example.taskproject.common.util.CustomMapper;
@@ -45,8 +42,20 @@ public class TaskController {
     public ResponseEntity<Map<String, Object>> updateTask(
             @PathVariable Long taskId,
             @RequestBody TaskUpdateRequestDto request,
-            @AuthenticationPrincipal AuthUserDto userDto){
+            @AuthenticationPrincipal AuthUserDto userDto
+    ){
         TaskResponseDto response = taskService.updateTask(taskId, request, userDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(response, true));
+    }
+
+    @PutMapping("{taskId}/status")
+    public ResponseEntity<Map<String, Object>> updateTaskStatus(
+            @PathVariable Long taskId,
+            @RequestBody @Valid TaskStatusUpdateRequest request,
+            @AuthenticationPrincipal AuthUserDto userDto
+    ) {
+        TaskResponseDto response = taskService.updateTaskStatus(taskId, request, userDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(response, true));
     }
