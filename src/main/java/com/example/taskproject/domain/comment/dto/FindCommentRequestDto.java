@@ -1,12 +1,8 @@
 package com.example.taskproject.domain.comment.dto;
 
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-public class FindCommentRequestDto {
-    private final String content;
+import static com.example.taskproject.common.constant.ValidationMessage.COMMENT_CONTENTS;
 
-    public FindCommentRequestDto(String content){
-        this.content = content;
-    }
+public record FindCommentRequestDto(@NotBlank(message = COMMENT_CONTENTS) String content) {
 }
