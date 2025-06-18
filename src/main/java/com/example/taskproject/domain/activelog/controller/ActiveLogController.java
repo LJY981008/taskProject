@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -25,6 +26,8 @@ public class ActiveLogController {
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String activityType,
             @RequestParam(required = false) Long targetId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "true") boolean sortByTime
@@ -33,8 +36,8 @@ public class ActiveLogController {
                 userId,
                 activityType,
                 targetId,
-                null,
-                null,
+                startDate,
+                endDate,
                 page,
                 size,
                 sortByTime
