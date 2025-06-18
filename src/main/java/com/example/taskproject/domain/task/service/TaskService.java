@@ -1,6 +1,7 @@
 package com.example.taskproject.domain.task.service;
 
 
+import com.example.taskproject.common.annotation.Logging;
 import com.example.taskproject.common.dto.*;
 import com.example.taskproject.common.entity.Task;
 import com.example.taskproject.common.entity.User;
@@ -18,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.taskproject.common.enums.CustomErrorCode.TASK_NOT_FOUND;
 import static com.example.taskproject.common.enums.CustomErrorCode.UNAUTHENTICATED;
@@ -161,9 +160,8 @@ public class TaskService {
         if (!task.getAuthor().getUserId().equals(userDto.getId())) {
             throw new CustomException(UNAUTHENTICATED);
         }
-        task.setDeleted(true);
-        task.setDeletedAt(LocalDateTime.now());
-        //activeLogService.logActivity(userDto.getId(), "TASK_DELETED", task.getTaskId());
+
+        task.delete();
 
         taskRepository.save(task);
     }

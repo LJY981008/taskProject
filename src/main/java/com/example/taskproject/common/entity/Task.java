@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,6 +43,9 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "manager_id")
     private User manager;
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     public Task(){
     }
 
@@ -49,5 +53,14 @@ public class Task extends BaseEntity {
         this.taskId = taskId;
         this.title = title;
         this.author = author;
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+
+        if(!this.comments.isEmpty()) {
+            this.comments.forEach(Comment::delete);
+        }
     }
 }

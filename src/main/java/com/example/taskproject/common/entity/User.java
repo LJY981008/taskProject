@@ -38,7 +38,7 @@ public class User extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> writeTasks;
 
     @OneToMany(mappedBy = "manager")
@@ -47,10 +47,18 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "author")
     private List<Comment> comments;
 
-
     public User(Long userId, String email, String userName){
         this.userId = userId;
         this.email = email;
         this.username = userName;
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+
+        if(!this.writeTasks.isEmpty()) {
+            this.writeTasks.forEach(Task::delete);
+        }
     }
 }
