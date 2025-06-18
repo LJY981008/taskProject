@@ -115,11 +115,11 @@ public class CommentServiceTest {
         List<Comment> commentList = List.of(comment1, comment2);
         Page<Comment> commentPage = new PageImpl<>(commentList, pageable, commentList.size());
 
-        given(commentRepository.findByTask_TaskIdAndDeletedFalse(eq(taskId), any(Pageable.class)))
+        given(commentRepository.findByComments(eq(taskId), any(Pageable.class)))
                 .willReturn(commentPage);
 
         // when
-        PagedResponse<FindCommentResponseDto> responseDto = commentService.findAll(taskId, pageable);
+        PagedResponse<CommentResponseDto> responseDto = commentService.findAll(taskId, pageable);
 
         // then
         assertEquals(2, responseDto.getContent().size());
@@ -145,11 +145,11 @@ public class CommentServiceTest {
         List<Comment> commentList = List.of(comment1, comment2);
         Page<Comment> commentPage = new PageImpl<>(commentList, pageable, commentList.size());
 
-        given(commentRepository.findByTask_TaskIdAndContentsContainingAndDeletedFalse(eq(taskId), eq(requestDto.getContent()), any(Pageable.class)))
+        given(commentRepository.findByCommentsContent(eq(taskId), eq(requestDto.content()), any(Pageable.class)))
                 .willReturn(commentPage);
 
         // when
-        PagedResponse<FindCommentResponseDto> responseDto =
+        PagedResponse<CommentResponseDto> responseDto =
                 commentService.findByContents(taskId, requestDto, pageable);
 
         // then
