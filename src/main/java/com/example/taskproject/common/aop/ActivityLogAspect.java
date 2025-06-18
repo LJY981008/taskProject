@@ -25,38 +25,10 @@ public class ActivityLogAspect {
     public Object logActivity(ProceedingJoinPoint joinPoint, Logging logging) throws Throwable{
         Object result = joinPoint.proceed();
 
-        Long userId = null;
-        ActivityType activityType = logging.value();
-        Long targetId = null;
-
         try{
-            if(result != null){
-                if(result instanceof UserResponse userResponse){
-                    userId = userResponse.getId();
-                    targetId = userResponse.getId();
-                }
-                else if(result instanceof TaskResponseDto taskResponse){
-                    userId = taskResponse.getAssigneeId();
-                    targetId = taskResponse.getId();
-                }
-                else if(result instanceof CommentResponseDto commentResponse){
-                    userId = commentResponse.getUserId();
-                    targetId = commentResponse.getId();
-                }
-            }
-
-            if(userId == null || targetId == null){
-                String methodName = joinPoint.getSignature().getName();
-                Long param = null;
-
-                for(Object arg : joinPoint.getArgs()){
-                    if(arg instanceof AuthUserDto authUser) userId = authUser.getId();
-                    else if(arg instanceof Long l && param == null) param = l;
-                }
-                if(methodName.contains("deleteComment")) targetId = param;
-                else if(methodName.contains("deleteTask")) targetId = param;
-                else if(methodName.contains("withdraw")) targetId = userId;
-            }
+            Long userId = extractUserId(result, joinPoint);
+            Long targetId = extractTargetId(result, joinPoint, userId);
+            ActivityType activityType = logging.value();
 
             if(userId != null && targetId != null) activeLogService.logActivity(userId, activityType.name(), targetId);
             else log.warn("로그 기록 실패");
@@ -65,5 +37,46 @@ public class ActivityLogAspect {
         }
 
         return result;
+    }
+
+    private Long extractUserId(Object result, ProceedingJoinPoint joinPoint){
+        if(result instanceof UserResponse userResponse)
+            return userResponse.getId();
+        else if(result instanceof TaskResponseDto taskResponse)
+            return taskResponse.getAssigneeId();
+        else if(result instanceof CommentResponseDto commentResponse)
+            return commentResponse.getUserId();
+        else{
+            for(Object arg : joinPoint.getArgs()){
+                if(arg instanceof AuthUserDto authUser)
+                    return authUser.getId();
+            }
+        }
+
+        return null;
+    }
+
+    private Long extractTargetId(Object result, ProceedingJoinPoint joinPoint, Long userId){
+        if(result instanceof UserResponse userResponse)
+            return userResponse.getId();
+        else if(result instanceof TaskResponseDto taskResponse)
+            return taskResponse.getId();
+        else if(result instanceof CommentResponseDto commentResponse)
+            return commentResponse.getId();
+        else{
+            String methodName = joinPoint.getSignature().getName();
+            Long param = null;
+
+            for(Object arg : joinPoint.getArgs()){
+                if(arg instanceof Long l && param == null) param = l;
+            }
+
+            if(methodName.contains("deleteComment") || methodName.contains("deleteTask"))
+                return param;
+            else if(methodName.contains("withdraw"))
+                return userId;
+        }
+
+        return null;
     }
 }
