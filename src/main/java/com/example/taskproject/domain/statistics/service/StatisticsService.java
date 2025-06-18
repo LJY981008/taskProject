@@ -1,14 +1,10 @@
 package com.example.taskproject.domain.statistics.service;
 
-import com.example.taskproject.common.enums.TaskStatus;
+import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.domain.statistics.dto.*;
 import com.example.taskproject.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,60 +13,38 @@ public class StatisticsService {
     private final TaskRepository taskRepository;
 
     /**
-     * 전체 작업의 상태별 개수를 조회합니다.
+     * 사용자의 대시보드 통계 정보를 조회합니다.
      *
-     * @return 할 일(TODO), 진행 중(IN_PROGRESS), 완료(DONE) 상태의 작업 개수를 담은 응답 객체입니다. {@link GetTaskStatusResponse}
-     */
-    public GetTaskStatusResponse getTaskStatusCounts() {
-
-        List<StatusCount> taskCounts = taskRepository.findStatusCount();
-
-        long todo = 0L;
-        long inProgress = 0L;
-        long done = 0L;
-
-        for (StatusCount count : taskCounts) {
-            switch (count.getTaskStatus()) {
-                case TODO -> todo = count.getCount();
-                case IN_PROGRESS -> inProgress = count.getCount();
-                case DONE -> done = count.getCount();
-            }
-        }
-
-        return new GetTaskStatusResponse(todo, inProgress, done);
-    }
-
-    /**
-     * 특정 사용자가 속한 팀의 완료된 작업 개수를 조회합니다.
+     * <p>이 메서드는 로그인된 사용자의 이메일을 기준으로 {@link DashboardStats} 정보를 조회하고,
+     * 각 항목을 {@link DashboardStatsResponse} 객체로 매핑하여 반환합니다.
+     * 완료율(completionRate)은 완료된 작업 수를 전체 작업 수로 나눈 후 백분율로 계산하며,
+     * 전체 작업 수가 0인 경우 0%로 처리됩니다.</p>
      *
-     * @param email 사용자 이메일 (팀 식별용)
-     * @return 팀 전체의 완료된 작업 개수를 담은 DTO {@link TeamTaskStatusCount}
+     * @author kimyongjun0129
+     * @param authUser 인증된 사용자 정보 (이메일 포함)
+     * @return {@link DashboardStatsResponse} 객체 - 대시보드 통계 응답
      */
-    public TeamTaskStatusCount getTeamFinishTaskCounts(String email) {
-        return taskRepository.findTeamTaskStatusCount(email, TaskStatus.DONE);
-    }
+    public DashboardStatsResponse getDashboardStatsCount(AuthUserDto authUser) {
 
-    /**
-     * 특정 날짜를 기준으로 7일 전부터 해당 날짜까지의 완료된 작업 개수를 조회합니다.
-     * <p>
-     * 기준 날짜는 해당 날짜의 23:59:59.999 까지 포함됩니다.
-     *
-     * @param from 기준 날짜 (포함)
-     * @return 주간 완료된 작업 개수를 담은 DTO {@link WeekFinishTaskCount}
-     */
-    public WeekFinishTaskCount getWeekFinishTaskCounts(LocalDate from) {
-        LocalDateTime end = from.atTime(23, 59, 59, 999_999_999);
-        LocalDateTime start = end.minusDays(7);
+        String authEmail = authUser.getEmail();
 
-        return taskRepository.findWeekFinishTaskCounts(TaskStatus.DONE, start, end);
-    }
+        DashboardStats dashboardStats = taskRepository.findDashboardStats(authEmail);
 
-    /**
-     * 마감 기한이 지난 작업 개수를 조회합니다.
-     *
-     * @return 마감 기한 초과 작업 수를 담은 DTO {@link OverDueTaskCount}
-     */
-    public OverDueTaskCount getOverdueTaskCounts() {
-        return taskRepository.findOverDueTaskCount();
+
+        Long completionRate = dashboardStats.totalTasks().equals(0L) ? 0L
+                : Math.round(
+                        (double) dashboardStats.completedTasks() / dashboardStats.totalTasks() * 100
+        );
+
+        return DashboardStatsResponse.builder()
+                .todoTasks(dashboardStats.todoTasks())
+                .inProgressTasks(dashboardStats.inProgressTasks())
+                .completedTasks(dashboardStats.completedTasks())
+                .overdueTasks(dashboardStats.overdueTasks())
+                .totalTasks(dashboardStats.totalTasks())
+                .teamProgress(dashboardStats.teamProgress())
+                .myTasksToday(dashboardStats.myTasksToday())
+                .completionRate(completionRate)
+                .build();
     }
 }

@@ -15,87 +15,54 @@ import static com.example.taskproject.common.entity.QTask.task;
 
 @Repository
 @RequiredArgsConstructor
-public class StatisticsRepositoryImpl implements StatisticsRepository {
+public class StatisticsRepositoryImpl implements StatisticsRepository{
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<StatusCount> findStatusCount() {
-        return queryFactory.select(
-                        new QStatusCount(
-                                task.taskStatus,
-                                task.count()
-                        )).from(task)
-                .where(task.deleted.isFalse())
-                .groupBy(task.taskStatus)
-                .fetch();
-    }
+    public DashboardStats findDashboardStats(String authorUsername) {
 
-    @Override
-    public TeamTaskStatusCount findTeamTaskStatusCount(String authorUsername, TaskStatus taskStatus) {
-
-        NumberExpression<Long> teamFinishTaskCount = new CaseBuilder()
-                .when(task.taskStatus.eq(taskStatus)).then(1L)
+        NumberExpression<Long> todoTasks = new CaseBuilder()
+                .when(task.taskStatus.eq(TaskStatus.TODO)).then(1L)
                 .otherwise(0L).sum();
 
-        NumberExpression<Long> myFinishTaskCount = new CaseBuilder()
-                .when(task.taskStatus.eq(taskStatus)
-                        .and(task.author.username.eq(authorUsername)))
-                .then(1L)
+        NumberExpression<Long> inProgressTasks = new CaseBuilder()
+                .when(task.taskStatus.eq(TaskStatus.IN_PROGRESS)).then(1L)
                 .otherwise(0L).sum();
 
-
-        return queryFactory.select(
-                        new QTeamTaskStatusCount(
-                                task.count(),
-                                teamFinishTaskCount,
-                                myFinishTaskCount
-                        ))
-                .from(task)
-                .where(task.deleted.isFalse())
-                .fetchOne();
-    }
-
-    @Override
-    public WeekFinishTaskCount findWeekFinishTaskCounts(TaskStatus taskStatus, LocalDateTime start, LocalDateTime end) {
-
-        NumberExpression<Long> weekTaskCount = new CaseBuilder()
-                .when(task.createdAt.between(start, end))
-                .then(1L)
+        NumberExpression<Long> completedTasks = new CaseBuilder()
+                .when(task.taskStatus.eq(TaskStatus.DONE)).then(1L)
                 .otherwise(0L).sum();
 
-        NumberExpression<Long> weekFinishTaskCount = new CaseBuilder()
-                .when(task.createdAt.between(start, end)
-                        .and(task.taskStatus.eq(taskStatus)))
-                .then(1L)
-                .otherwise(0L).sum();
-
-        return queryFactory.select(
-                new QWeekFinishTaskCount(
-                        weekTaskCount,
-                        weekFinishTaskCount
-                ))
-                .from(task)
-                .where(task.deleted.isFalse())
-                .fetchOne();
-    }
-
-    @Override
-    public OverDueTaskCount findOverDueTaskCount() {
-        NumberExpression<Long> overDueCount = new CaseBuilder()
+        NumberExpression<Long> overDueTasks = new CaseBuilder()
                 .when(
                         task.taskStatus.eq(TaskStatus.TODO)
-                        .or(task.taskStatus.eq(TaskStatus.IN_PROGRESS))
+                                .or(task.taskStatus.eq(TaskStatus.IN_PROGRESS))
                                 .and(task.dueDate.lt(LocalDateTime.now()))
                 )
                 .then(1L)
                 .otherwise(0L).sum();
 
+        NumberExpression<Long> teamProgress = new CaseBuilder()
+                .when(task.taskStatus.eq(TaskStatus.DONE)).then(1L)
+                .otherwise(0L).sum();
+
+        NumberExpression<Long> myTasksToday =  new CaseBuilder()
+                .when(task.taskStatus.eq(TaskStatus.DONE)
+                        .and(task.author.username.eq(authorUsername)))
+                .then(1L)
+                .otherwise(0L).sum();
+
         return queryFactory.select(
-                new QOverDueTaskCount(
-                        overDueCount
-                ))
-                .from(task)
+                        new QDashboardStats(
+                                todoTasks,
+                                inProgressTasks,
+                                completedTasks,
+                                task.count(),
+                                overDueTasks,
+                                teamProgress,
+                                myTasksToday
+                        )).from(task)
                 .where(task.deleted.isFalse())
                 .fetchOne();
     }
