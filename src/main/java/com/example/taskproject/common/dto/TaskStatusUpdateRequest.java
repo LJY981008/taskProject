@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TaskStatusUpdateRequest {
-    @NotNull(message = "상태를 지정해야합니다.")
+    @NotNull
     private TaskStatus status;
 }

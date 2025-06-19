@@ -20,17 +20,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TaskCreateRequestDto {
 
-    @NotBlank(message = "title을 입력해주세요")
+    @NotBlank
     private String title;
 
     private String description;
 
-    @NotNull(message = "taskpriority를 입력해주세요")
+    @NotNull
     private TaskPriority priority;
 
     private Long assigneeId;
 
-    @FutureOrPresent(message = "deadline은 현재 또는 미래여야 합니다.")
+    @FutureOrPresent
     private LocalDate dueDate;
 
     private TaskStatus taskStatus;

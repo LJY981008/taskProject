@@ -7,7 +7,9 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  messages:
+    encoding: UTF-8
+    basename: validation
   jpa:
     hibernate:
       ddl-auto: create
