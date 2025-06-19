@@ -3,6 +3,7 @@ package com.example.taskproject.domain.statistics.service;
 import com.example.taskproject.common.dto.AuthUserDto;
 import com.example.taskproject.domain.statistics.dto.*;
 import com.example.taskproject.domain.task.repository.TaskRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +47,12 @@ public class StatisticsService {
                 .myTasksToday(dashboardStats.myTasksToday())
                 .completionRate(completionRate)
                 .build();
+    }
+
+    @Transactional
+    public MyTasksResponse getMyTasks(AuthUserDto authUser) {
+
+        String authEmail = authUser.getEmail();
+        return taskRepository.findMyTasks(authEmail);
     }
 }

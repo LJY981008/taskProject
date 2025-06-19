@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class TaskResponseDto {
 
     private Long id;
@@ -58,5 +57,19 @@ public class TaskResponseDto {
         User author = task.getAuthor();
         this.assigneeId = author.getUserId();
         this.assignee = new UserInfo(author.getUserId(), author.getUsername(), author.getName(), author.getEmail());
+    }
+
+    public TaskResponseDto(Long id, String title, String description, TaskPriority priority, TaskStatus status, LocalDateTime dueDate, LocalDateTime startedAt, Long assigneeId, UserInfo assignee, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.status = status;
+        this.dueDate = dueDate;
+        this.startedAt = startedAt;
+        this.assigneeId = assigneeId;
+        this.assignee = assignee;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

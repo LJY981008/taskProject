@@ -26,7 +26,7 @@ public class Task extends BaseEntity {
     private String contents;
 
     @Column(name = "priority")
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private TaskPriority taskPriority;
 
     @Column(name = "status")

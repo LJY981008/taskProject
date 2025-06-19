@@ -64,7 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register","api/auth/login").permitAll()
                         .requestMatchers("/api/tasks/my").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/tasks").hasRole(UserRole.USER.name())
-                        .requestMatchers("/api/dashboard/stats").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard/**").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/users/**").hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.POST, "/api/tasks").hasRole(UserRole.USER.name())
                         .requestMatchers("/api/tasks/my").hasRole(UserRole.USER.name())
