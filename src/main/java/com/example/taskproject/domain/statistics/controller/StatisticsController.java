@@ -38,4 +38,14 @@ public class StatisticsController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomMapper.responseToMap(taskStatusCounts, true));
     }
+
+    @GetMapping("/my-tasks")
+    public ResponseEntity<Map<String, Object>> getMyTasks(
+            @AuthenticationPrincipal AuthUserDto authUserDto
+    ) {
+        MyTasksResponse myTasksListResponse = statisticsService.getMyTasks(authUserDto);
+        System.out.println("myTasksListResponse = " + myTasksListResponse);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomMapper.responseToMap(myTasksListResponse, true));
+    }
 }

@@ -5,4 +5,6 @@ import com.example.taskproject.domain.statistics.dto.*;
 public interface StatisticsRepository {
 
     DashboardStats findDashboardStats(String authorUsername);
+
+    MyTasksResponse findMyTasks(String authorUsername);
 }
